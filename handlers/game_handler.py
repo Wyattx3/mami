@@ -1,0 +1,408 @@
+"""
+Game flow handler
+"""
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ContextTypes
+from typing import Dict, List, Any
+import asyncio
+import logging
+from database.db_manager import db_manager
+from services.team_service import team_service
+from services.scoring_service import scoring_service
+from handlers.voting_handler import voting_handler
+from utils.constants import ROLES, GAME_STATUS
+from utils.helpers import get_team_name
+import config
+
+# Setup logger
+logger = logging.getLogger(__name__)
+
+
+class GameHandler:
+    """Handles game flow and state management"""
+    
+    def __init__(self):
+        self.num_rounds = config.NUM_ROUNDS
+        self.round_time = config.ROUND_TIME
+        self.characters_per_round = config.CHARACTERS_PER_VOTING
+        # Store active games: {game_id: {'teams': ..., 'chat_id': ..., 'message_id': ...}}
+        self.active_games: Dict[int, Dict[str, Any]] = {}
+        # Store player team info for chat: {user_id: {'game_id': ..., 'team_id': ..., 'team_players': [...]}}
+        self.player_teams: Dict[int, Dict[str, Any]] = {}
+    
+    async def start_game(self, context: ContextTypes.DEFAULT_TYPE, 
+                        lobby_chat_id: int, lobby_message_id: int) -> int:
+        """Start a new game
+        
+        Returns:
+            game_id
+        """
+        logger.info(f"Starting new game - Chat: {lobby_chat_id}, Message: {lobby_message_id}")
+        
+        # Get players from lobby
+        players = await db_manager.get_lobby_players()
+        logger.debug(f"Retrieved {len(players)} players from lobby")
+        
+        if len(players) < config.LOBBY_SIZE:
+            logger.warning(f"Not enough players to start game: {len(players)}/{config.LOBBY_SIZE}")
+            return None
+        
+        # Create game
+        game_id = await db_manager.create_game(lobby_message_id, lobby_chat_id)
+        logger.info(f"Game created with ID: {game_id}")
+        
+        # Form teams
+        teams = team_service.form_teams(players)
+        logger.info(f"Teams formed - {len(teams)} teams created")
+        
+        # Save teams to database
+        flat_players = team_service.flatten_teams_for_db(teams)
+        await db_manager.add_game_players(game_id, flat_players)
+        
+        # Clear lobby
+        await db_manager.clear_lobby()
+        
+        # Update game status
+        await db_manager.update_game_status(game_id, GAME_STATUS['IN_PROGRESS'])
+        
+        # Store game data
+        self.active_games[game_id] = {
+            'teams': teams,
+            'chat_id': lobby_chat_id,
+            'message_id': lobby_message_id,
+            'team_announcement_message_id': None,
+            'round_messages': {}  # {round_number: message_id}
+        }
+        
+        # Store player team info for team chat
+        for team_id, team_players in teams.items():
+            for player in team_players:
+                user_id = player.get('user_id')
+                self.player_teams[user_id] = {
+                    'game_id': game_id,
+                    'team_id': team_id,
+                    'team_players': team_players
+                }
+        
+        logger.debug(f"Stored team info for {len(self.player_teams)} players")
+        
+        # Announce teams
+        team_announcement = team_service.get_team_announcement_message(teams)
+        msg = await context.bot.send_message(
+            chat_id=lobby_chat_id,
+            text=team_announcement,
+            parse_mode='Markdown'
+        )
+        self.active_games[game_id]['team_announcement_message_id'] = msg.message_id
+        logger.debug(f"Team announcement message ID: {msg.message_id}")
+        
+        # Wait a moment before starting rounds
+        await asyncio.sleep(3)
+        
+        # Start rounds
+        await self.run_all_rounds(context, game_id)
+        
+        return game_id
+    
+    async def run_all_rounds(self, context: ContextTypes.DEFAULT_TYPE, game_id: int):
+        """Run all 5 rounds of the game"""
+        logger.info(f"Starting rounds for game {game_id}")
+        game_data = self.active_games.get(game_id)
+        if not game_data:
+            logger.error(f"Game {game_id} not found in active games")
+            return
+        
+        teams = game_data['teams']
+        chat_id = game_data['chat_id']
+        
+        # Run each round
+        for round_number in range(1, self.num_rounds + 1):
+            logger.info(f"Game {game_id} - Starting round {round_number}/{self.num_rounds}")
+            await self.run_round(context, game_id, round_number, teams, chat_id)
+            
+            # Wait between rounds
+            if round_number < self.num_rounds:
+                await asyncio.sleep(2)
+        
+        # Game finished, show results
+        await self.finish_game(context, game_id, teams, chat_id)
+    
+    async def run_round(self, context: ContextTypes.DEFAULT_TYPE, game_id: int, 
+                       round_number: int, teams: Dict[int, List[Dict[str, Any]]], 
+                       chat_id: int):
+        """Run a single round"""
+        logger.debug(f"Game {game_id} - Running round {round_number}")
+        
+        # Update game round
+        await db_manager.update_game_round(game_id, round_number)
+        
+        # Get role info
+        role_info = ROLES.get(round_number, {})
+        role_name = role_info.get('name', 'Unknown')
+        
+        # Announce round start with "Go to Bot" button
+        from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+        
+        bot_username = (await context.bot.get_me()).username
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("🤖 Go to Bot", url=f"https://t.me/{bot_username}")]
+        ])
+        
+        round_message = f"🎯 **Round {round_number}: {role_name}**\n\n✅ Voting စတင်ပါပြီ!\n⏱️ {self.round_time} စက္ကန့်\n\n👉 Bot ထံသို့ သွားပြီး vote ပေးပါ!"
+        
+        # Always send new message for each round
+        msg = await context.bot.send_message(
+            chat_id=chat_id,
+            text=round_message,
+            reply_markup=keyboard,
+            parse_mode='Markdown'
+        )
+        
+        # Store this round's message ID
+        game_data = self.active_games.get(game_id)
+        if 'round_messages' not in game_data:
+            game_data['round_messages'] = {}
+        game_data['round_messages'][round_number] = msg.message_id
+        logger.debug(f"Sent round {round_number} message {msg.message_id}")
+        
+        # Initialize voting for this round
+        voting_handler.init_round_voting(game_id, round_number)
+        
+        # Send voting to each team
+        for team_id, team_players in teams.items():
+            # Get characters already used by this team
+            used_character_ids = await db_manager.get_team_used_character_ids(game_id, team_id)
+            
+            # Get random characters (excluding already used ones)
+            characters = await db_manager.get_random_characters(
+                self.characters_per_round, 
+                exclude_ids=used_character_ids
+            )
+            
+            if len(characters) < self.characters_per_round:
+                logger.error(f"Not enough characters in database: {len(characters)}/{self.characters_per_round}")
+                await context.bot.send_message(
+                    chat_id=chat_id,
+                    text=f"⚠️ Database မှာ character အရေအတွက် မလုံလောက်ပါ! အနည်းဆုံး {self.characters_per_round} characters လိုအပ်ပါတယ်။"
+                )
+                return
+            
+            logger.debug(f"Game {game_id} - Team {team_id} - Sending voting for round {round_number} (excluded {len(used_character_ids)} used characters)")
+            
+            # Send voting messages
+            await voting_handler.send_team_voting(
+                context, game_id, round_number, team_id, team_players, characters
+            )
+        
+        # Wait for voting time
+        logger.debug(f"Game {game_id} - Round {round_number} - Waiting {self.round_time} seconds for votes")
+        await asyncio.sleep(self.round_time)
+        
+        # Finalize votes
+        logger.debug(f"Game {game_id} - Round {round_number} - Finalizing votes")
+        selections = await voting_handler.finalize_round_voting(game_id, round_number, teams, context)
+        
+        # Announce selections
+        await self.announce_round_results(context, chat_id, round_number, selections, teams, game_id)
+    
+    async def announce_round_results(self, context: ContextTypes.DEFAULT_TYPE, 
+                                    chat_id: int, round_number: int, 
+                                    selections: Dict[int, int], 
+                                    teams: Dict[int, List[Dict[str, Any]]],
+                                    game_id: int):
+        """Announce round results by editing the round message"""
+        role_info = ROLES.get(round_number, {})
+        role_name = role_info.get('name', 'Unknown')
+        
+        lines = [f"✅ **Round {round_number}: {role_name}** - ပြီးဆုံးပါပြီ!\n"]
+        lines.append("📊 **Team Selections:**\n")
+        
+        for team_id in sorted(teams.keys()):
+            team_name = get_team_name(teams[team_id])
+            char_id = selections.get(team_id)
+            if char_id:
+                character = await db_manager.get_character(char_id)
+                if character:
+                    lines.append(f"• **{team_name}:** {character.name}")
+                else:
+                    lines.append(f"• **{team_name}:** Unknown")
+            else:
+                lines.append(f"• **{team_name}:** Optional (မဲမပေးခဲ့ပါ)")
+        
+        message = "\n".join(lines)
+        
+        # Edit this round's message with results
+        game_data = self.active_games.get(game_id)
+        if game_data and 'round_messages' in game_data and round_number in game_data['round_messages']:
+            try:
+                await context.bot.edit_message_text(
+                    chat_id=chat_id,
+                    message_id=game_data['round_messages'][round_number],
+                    text=message,
+                    parse_mode='Markdown'
+                )
+                logger.debug(f"Edited round {round_number} message with results")
+            except Exception as e:
+                logger.error(f"Error editing round results: {e}")
+    
+    async def send_private_results(self, context: ContextTypes.DEFAULT_TYPE, 
+                                   game_id: int, teams: Dict[int, List[Dict[str, Any]]],
+                                   results: Dict[int, Dict[str, Any]], winner: int):
+        """Send private results to all players"""
+        logger.info(f"Game {game_id} - Sending private results to all players")
+        
+        # Prepare winner info
+        winner_team_name = get_team_name(results[winner]['players'])
+        winner_score = results[winner]['total_score']
+        
+        for team_id, team_players in teams.items():
+            team_name = get_team_name(team_players)
+            team_data = results.get(team_id, {})
+            team_score = team_data.get('total_score', 0)
+            
+            # Build team result message
+            lines = [
+                f"📊 **Game Results - {team_name}**\n",
+                f"🎮 Game ID: {game_id}\n"
+            ]
+            
+            # Show team's rounds
+            if 'rounds' in team_data:
+                lines.append("**သင့် Team ရဲ့ ရလဒ်များ:**\n")
+                for round_data in team_data['rounds']:
+                    role = round_data.get('role', 'Unknown')
+                    char_name = round_data.get('character_name', 'Optional')
+                    score = round_data.get('score', 0)
+                    lines.append(f"• **{role}**: {char_name} ({score}/10 မှတ်)")
+                
+                lines.append(f"\n**Total Score:** {team_score} မှတ်\n")
+            
+            # Show winner
+            if team_id == winner:
+                lines.append("🎉 **သင့် Team က အနိုင်ရခဲ့ပါတယ်!** 🎉")
+            else:
+                lines.append(f"👑 **Winner:** {winner_team_name} ({winner_score} မှတ်)")
+            
+            private_message = "\n".join(lines)
+            
+            # Send to all players in team
+            for player in team_players:
+                user_id = player.get('user_id')
+                try:
+                    await context.bot.send_message(
+                        chat_id=user_id,
+                        text=private_message,
+                        parse_mode='Markdown'
+                    )
+                    logger.debug(f"Private result sent to user {user_id}")
+                except Exception as e:
+                    logger.error(f"Failed to send private result to user {user_id}: {e}")
+            
+            # Small delay between teams
+            await asyncio.sleep(1)
+    
+    async def finish_game(self, context: ContextTypes.DEFAULT_TYPE, game_id: int,
+                         teams: Dict[int, List[Dict[str, Any]]], chat_id: int):
+        """Finish game and show results"""
+        logger.info(f"Game {game_id} - Finishing game and calculating results")
+        
+        # Score the game
+        results = await scoring_service.score_game(game_id)
+        logger.debug(f"Game {game_id} - Scoring completed")
+        
+        # Determine winner
+        winner = scoring_service.determine_winner(results)
+        logger.info(f"Game {game_id} - Winner determined: Team {winner}")
+        
+        # Save winner
+        await db_manager.set_game_winner(game_id, winner)
+        
+        # Announce game finished
+        calculating_msg = await context.bot.send_message(
+            chat_id=chat_id,
+            text="🏁 **Game ပြီးဆုံးပါပြီ!**\n\nရလဒ်များကို တွက်ချက်နေပါသည်... 🔢",
+            parse_mode='Markdown'
+        )
+        
+        # Wait a moment for drama
+        await asyncio.sleep(3)
+        
+        # Edit calculating message to show "ရလဒ်များ:"
+        try:
+            await context.bot.edit_message_text(
+                chat_id=chat_id,
+                message_id=calculating_msg.message_id,
+                text="🏁 **Game ပြီးဆုံးပါပြီ!**\n\n📊 **ရလဒ်များ:**",
+                parse_mode='Markdown'
+            )
+            logger.debug(f"Edited calculating message to show results header")
+        except Exception as e:
+            logger.error(f"Error editing calculating message: {e}")
+        
+        # Send results for each team with details button
+        result_messages = scoring_service.format_all_results(results, winner)
+        
+        for team_id, message in zip(sorted(results.keys()), result_messages):
+            # Create details button for each team
+            keyboard = InlineKeyboardMarkup([
+                [InlineKeyboardButton("📊 Details", callback_data=f"details_{game_id}_{team_id}")]
+            ])
+            
+            await context.bot.send_message(
+                chat_id=chat_id,
+                text=message,
+                reply_markup=keyboard,
+                parse_mode='Markdown'
+            )
+            await asyncio.sleep(1)
+        
+        # Final winner announcement
+        winner_players = results[winner]['players']
+        winner_team_name = get_team_name(winner_players)
+        winner_names = ', '.join([f"@{p['username']}" for p in winner_players])
+        winner_score = results[winner]['total_score']
+        
+        final_message = f"""
+🎉 **အနိုင်ရရှိသူ!** 🎉
+
+👑 **{winner_team_name}** 👑
+Players: {winner_names}
+Score: {winner_score} မှတ်
+
+Congratulations! 🎊
+"""
+        
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text=final_message,
+            parse_mode='Markdown'
+        )
+        
+        # Send private results to all players
+        logger.debug(f"Game {game_id} - Sending private results to all players")
+        await self.send_private_results(context, game_id, teams, results, winner)
+        
+        # Update game status to finished
+        await db_manager.update_game_status(game_id, GAME_STATUS['FINISHED'])
+        logger.info(f"Game {game_id} - Status updated to finished")
+        
+        # Cleanup
+        voting_handler.clear_game_votes(game_id)
+        
+        # Clear player teams
+        players_to_remove = [user_id for user_id, data in self.player_teams.items() 
+                            if data['game_id'] == game_id]
+        for user_id in players_to_remove:
+            del self.player_teams[user_id]
+        logger.debug(f"Cleared team info for {len(players_to_remove)} players")
+        
+        if game_id in self.active_games:
+            del self.active_games[game_id]
+        
+        logger.info(f"Game {game_id} - Game completed and cleaned up")
+
+
+# Global game handler instance
+game_handler = GameHandler()
+
+
