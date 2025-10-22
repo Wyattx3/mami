@@ -3,6 +3,7 @@ Main Telegram Bot Entry Point
 """
 import logging
 import asyncio
+import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     Application, 
@@ -15,6 +16,15 @@ from telegram.ext import (
 )
 
 import config
+
+# Keep alive for Replit (prevents sleeping on free tier)
+if os.getenv('REPLIT_DEPLOYMENT'):
+    try:
+        from keep_alive import keep_alive
+        keep_alive()
+        logging.info("Keep alive server started for Replit")
+    except ImportError:
+        logging.warning("Keep alive module not found, skipping")
 from database.db_manager import db_manager
 from handlers.lobby_handler import lobby_handler
 from handlers.game_handler import game_handler
