@@ -59,6 +59,7 @@ class DatabaseManager:
                     user_id INTEGER NOT NULL,
                     username TEXT,
                     team_number INTEGER NOT NULL,
+                    is_leader INTEGER DEFAULT 0,
                     FOREIGN KEY (game_id) REFERENCES games (id),
                     UNIQUE(game_id, user_id)
                 )
