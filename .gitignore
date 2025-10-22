@@ -4,20 +4,14 @@ __pycache__/
 *$py.class
 *.so
 .Python
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
 venv/
 env/
 ENV/
-
-# Environment variables
-.env
-
-# Database
-*.db
-database/*.db
-
-# Logs
-*.log
-bot_output.log
 
 # IDE
 .vscode/
@@ -25,11 +19,25 @@ bot_output.log
 *.swp
 *.swo
 
+# Environment Variables (DO NOT UPLOAD)
+.env
+
+# Database (will be created on Replit)
+database/game.db
+database/*.db
+*.db
+
+# Logs
+*.log
+bot_output.log
+
 # OS
 .DS_Store
 Thumbs.db
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
+# Replit
+.replit.nix
+replit.nix
+.cache/
+.upm/
+.breakpoints

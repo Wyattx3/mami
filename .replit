@@ -1,5 +1,5 @@
 run = "python bot.py"
-modules = ["python-3.11"]
+modules = ["python-3.13"]
 
 [nix]
 channel = "stable-24_05"
@@ -7,8 +7,3 @@ channel = "stable-24_05"
 [deployment]
 run = ["sh", "-c", "python bot.py"]
 deploymentTarget = "cloudrun"
-
-[[ports]]
-localPort = 8080
-externalPort = 80
-

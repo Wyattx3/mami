@@ -58,11 +58,11 @@ def get_team_name(players: List[Dict[str, Any]]) -> str:
 
 def format_team_announcement(teams: Dict[int, List[Dict[str, Any]]]) -> str:
     """Format team announcement message with leaders"""
-    lines = ["🎮 **Team များ ခွဲခြားပြီးပါပြီ!**\n"]
+    lines = ["🎮 Team များ ခွဲခြားပြီးပါပြီ!\n"]
     
     for team_num, players in teams.items():
         team_name = get_team_name(players)
-        lines.append(f"**{team_name}:**")
+        lines.append(f"{team_name}:")
         for player in players:
             username = player.get('username', 'Unknown')
             is_leader = player.get('is_leader', False)

@@ -86,12 +86,11 @@ class GameHandler:
         
         logger.debug(f"Stored team info for {len(self.player_teams)} players")
         
-        # Announce teams
+        # Announce teams (no parse_mode to avoid underscore issues in usernames)
         team_announcement = team_service.get_team_announcement_message(teams)
         msg = await context.bot.send_message(
             chat_id=lobby_chat_id,
-            text=team_announcement,
-            parse_mode='Markdown'
+            text=team_announcement
         )
         self.active_games[game_id]['team_announcement_message_id'] = msg.message_id
         logger.debug(f"Team announcement message ID: {msg.message_id}")
