@@ -40,6 +40,7 @@ async def test_connection():
         if count == 0:
             print("\n➕ Adding test character...")
             test_char = Character(
+                id=None,
                 name="Test Character",
                 mbti="INTJ",
                 zodiac="Aries",
