@@ -799,46 +799,37 @@ async def show_detailed_help(query, help_type):
      - Leadership
      - Decision making
      - Strategic thinking
-   • ဥပမာ MBTI: ENTJ, ENFJ, ESTJ
-   • ဥပမာ Zodiac: Leo, Aries, Capricorn
 
 **Round 2: ⚔️ စစ်သူကြီး (General)**
    • လိုအပ်သော စွမ်းရည်များ:
      - Courage
      - Tactical skills
      - Quick decision
-   • ဥပမာ MBTI: ESTP, ISTP, ENTJ
-   • ဥပမာ Zodiac: Aries, Scorpio, Sagittarius
 
 **Round 3: 🧠 အကြံပေး (Advisor)**
    • လိုအပ်သော စွမ်းရည်များ:
      - Wisdom
      - Analysis
      - Problem solving
-   • ဥပမာ MBTI: INTJ, INTP, INFJ
-   • ဥပမာ Zodiac: Virgo, Aquarius, Gemini
 
 **Round 4: 🌾 လယ်သမား (Farmer)**
    • လိုအပ်သော စွမ်းရည်များ:
      - Resource management
      - Hard work
      - Practicality
-   • ဥပမာ MBTI: ISTJ, ISFJ, ESTJ
-   • ဥပမာ Zodiac: Taurus, Virgo, Capricorn
 
 **Round 5: 🙏 ဘုန်းကြီး (Monk)**
    • လိုအပ်သော စွမ်းရည်များ:
      - Wisdom
      - Calmness
      - Diplomacy
-   • ဥပမာ MBTI: INFJ, INFP, ISFP
-   • ဥပမာ Zodiac: Pisces, Cancer, Libra
 
 **Character System:**
    • MBTI: 16 personality types
    • Zodiac: 12 astrological signs
    • AI က MBTI + Zodiac သုံးပြီး role နှင့် match လုပ်ပါမယ်
    • Character description တွေလည်း ထည့်တွက်ပါတယ်
+   • ဘယ် character က ဘယ် role နဲ့ ကိုက်မယ်ဆိုတာ AI က သီးခြားစီ analyze လုပ်ပါမယ်
 
 **Character Reuse:**
    • Same character: Round 3 ခု ကြာမှ ထပ်သုံးနိုင်ပါတယ်
