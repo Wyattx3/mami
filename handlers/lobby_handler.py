@@ -24,7 +24,7 @@ class LobbyHandler:
         count = len(players)
         
         message_lines = [
-            "🎮 **Game Lobby**",
+            "🎮 Game Lobby",
             f"Players: {count}/{self.lobby_size}",
             "━━━━━━━━━━"
         ]
@@ -88,8 +88,7 @@ class LobbyHandler:
         lobby_message = await self.create_lobby_message(update)
         await query.edit_message_text(
             text=lobby_message,
-            reply_markup=self.get_lobby_keyboard(),
-            parse_mode='Markdown'
+            reply_markup=self.get_lobby_keyboard()
         )
         
         # Check if lobby is full
@@ -124,8 +123,7 @@ class LobbyHandler:
         lobby_message = await self.create_lobby_message(update)
         await query.edit_message_text(
             text=lobby_message,
-            reply_markup=self.get_lobby_keyboard(),
-            parse_mode='Markdown'
+            reply_markup=self.get_lobby_keyboard()
         )
         
         return True
@@ -133,14 +131,13 @@ class LobbyHandler:
     async def announce_game_start(self, context: ContextTypes.DEFAULT_TYPE, 
                                  chat_id: int, message_id: int):
         """Announce that game is starting"""
-        message = "🎮 **Game Starting!**\n\nPlayer အရေအတွက် ပြည့်ပါပြီ။ Team များ ခွဲခြားနေပါသည်... ⏳"
+        message = "🎮 Game Starting!\n\nPlayer အရေအတွက် ပြည့်ပါပြီ။ Team များ ခွဲခြားနေပါသည်... ⏳"
         
         try:
             await context.bot.edit_message_text(
                 chat_id=chat_id,
                 message_id=message_id,
-                text=message,
-                parse_mode='Markdown'
+                text=message
             )
         except Exception as e:
             print(f"Error announcing game start: {e}")
