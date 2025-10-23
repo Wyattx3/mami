@@ -32,6 +32,12 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 # Legacy SQLite path (for migration reference only)
 DATABASE_PATH = 'database/game.db'
 
+# Webhook Configuration (Production Mode)
+WEBHOOK_URL = os.getenv('WEBHOOK_URL')  # e.g., https://your-app.choreoapis.dev
+WEBHOOK_PATH = os.getenv('WEBHOOK_PATH', '/webhook')  # Webhook endpoint path
+PORT = int(os.getenv('PORT', 8080))  # Port for webhook server
+USE_WEBHOOK = bool(WEBHOOK_URL)  # Auto-detect webhook mode
+
 # Game Status Constants
 GAME_STATUS = {
     'LOBBY': 'lobby',

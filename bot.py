@@ -1201,9 +1201,10 @@ async def post_init(app: Application) -> None:
 
 
 def main():
-    """Main bot function"""
+    """Main bot function with webhook/polling support"""
     logger.info("=" * 50)
     logger.info("Bot starting up...")
+    logger.info(f"Mode: {'WEBHOOK' if config.USE_WEBHOOK else 'POLLING'}")
     logger.info("=" * 50)
     
     # Create application
@@ -1242,10 +1243,25 @@ def main():
     # Error handler
     app.add_error_handler(error_handler)
     
-    # Start bot
-    logger.info("Bot is ready and starting to poll for updates...")
-    logger.info("=" * 50)
-    app.run_polling(allowed_updates=Update.ALL_TYPES)
+    # Start bot in appropriate mode
+    if config.USE_WEBHOOK:
+        # Webhook mode (Production)
+        logger.info(f"Starting webhook server on port {config.PORT}")
+        logger.info(f"Webhook URL: {config.WEBHOOK_URL}{config.WEBHOOK_PATH}")
+        logger.info("=" * 50)
+        
+        app.run_webhook(
+            listen="0.0.0.0",
+            port=config.PORT,
+            url_path=config.WEBHOOK_PATH,
+            webhook_url=f"{config.WEBHOOK_URL}{config.WEBHOOK_PATH}",
+            allowed_updates=Update.ALL_TYPES
+        )
+    else:
+        # Polling mode (Local/Development)
+        logger.info("Bot is ready and starting to poll for updates...")
+        logger.info("=" * 50)
+        app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
 if __name__ == '__main__':
