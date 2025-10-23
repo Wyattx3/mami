@@ -23,14 +23,15 @@ class DatabaseManager:
         self.pool = None
     
     async def create_pool(self):
-        """Create database connection pool"""
+        """Create database connection pool with proper timeout settings"""
         if not self.pool:
             logger.info("Creating database connection pool...")
             self.pool = await asyncpg.create_pool(
                 self.database_url,
                 min_size=1,
                 max_size=10,
-                command_timeout=60
+                command_timeout=60,
+                timeout=30  # Connection acquisition timeout
             )
             logger.info("Database connection pool created")
     
@@ -49,7 +50,9 @@ class DatabaseManager:
         if not self.pool:
             await self.create_pool()
         
-        async with self.pool.acquire() as conn:
+        # Acquire connection with explicit timeout
+        conn = await self.pool.acquire(timeout=10.0)
+        try:
             # Characters table
             await conn.execute('''
                 CREATE TABLE IF NOT EXISTS characters (
@@ -118,7 +121,13 @@ class DatabaseManager:
                 )
             ''')
             
-        logger.info("Database initialized successfully")
+            logger.info("Database initialized successfully")
+        except Exception as e:
+            logger.error(f"Error initializing database: {e}")
+            raise
+        finally:
+            # Always release connection back to pool
+            await self.pool.release(conn)
     
     # ==================== Character Operations ====================
     
