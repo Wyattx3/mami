@@ -124,33 +124,26 @@ Ready to play? 🎉
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /help command"""
     logger.info(f"User {update.effective_user.id} used /help")
+    
     help_text = """
-📖 **အကူအညီ**
+📚 **အကူအညီ & လမ်းညွှန်**
 
-**ဘယ်လို ကစားရမလဲ?**
+Game ကစားနည်း၊ rules နှင့် features များကို အသေးစိတ် သိရှိနိုင်ပါတယ်။
 
-1. `/newgame` နဲ့ lobby ဖန်တီးပါ
-2. Join button ကို နှိပ်ပြီး ဝင်ရောက်ပါ
-3. 9 players ပြည့်ရင် game အလိုအလျောက် စတင်ပါမယ်
-4. Team 3 ခု random ခွဲပါမယ်
-5. Round 5 ခု voting လုပ်ရပါမယ်
-6. AI က scoring လုပ်ပြီး အနိုင်ကို သတ်မှတ်ပါမယ်
-
-**Roles:**
-• Round 1: ဘုရင် (ဦးဆောင်နိုင်တဲ့သူ)
-• Round 2: စစ်သူကြီး (သတ္တိရှိသူ)
-• Round 3: အကြံပေး (ဉာဏ်ပညာရှိသူ)
-• Round 4: လယ်သမား (စီးပွားရှာတတ်သူ)
-• Round 5: ဘုန်းကြီး (လိမ္မာယဥ်ကျေးသူ)
-
-**Voting:**
-• Team တိုင်းကို character 4 ခု ပြပါမယ်
-• 60 seconds အတွင်း ရွေးချယ်ရပါမယ်
-• အများဆုံး မဲရတဲ့ character ကို ရွေးပါမယ်
-
-Questions? Contact @admin
+အောက်က ခလုတ်များကို နှိပ်ပြီး လေ့လာပါ:
 """
-    await update.message.reply_text(help_text, parse_mode='Markdown')
+    
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🎮 ဘယ်လို စတင်မလဲ?", callback_data="help_start")],
+        [InlineKeyboardButton("📜 Game Rules", callback_data="help_rules")],
+        [InlineKeyboardButton("🗳️ Voting System", callback_data="help_voting")],
+        [InlineKeyboardButton("👑 Roles & Characters", callback_data="help_roles")],
+        [InlineKeyboardButton("🏆 Scoring System", callback_data="help_scoring")],
+        [InlineKeyboardButton("⚙️ Commands", callback_data="help_commands")],
+        [InlineKeyboardButton("❓ FAQ", callback_data="help_faq")],
+    ])
+    
+    await update.message.reply_text(help_text, reply_markup=keyboard, parse_mode='Markdown')
 
 
 async def newgame_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -647,41 +640,393 @@ async def details_callback_handler(update: Update, context: ContextTypes.DEFAULT
         await query.answer("Error showing details", show_alert=True)
 
 
+async def show_main_help_menu(query):
+    """Show main help menu with sections"""
+    help_text = """
+📚 **အကူအညီ & လမ်းညွှန်**
+
+Game ကစားနည်း၊ rules နှင့် features များကို အသေးစိတ် သိရှိနိုင်ပါတယ်။
+
+အောက်က ခလုတ်များကို နှိပ်ပြီး လေ့လာပါ:
+"""
+    
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🎮 ဘယ်လို စတင်မလဲ?", callback_data="help_start")],
+        [InlineKeyboardButton("📜 Game Rules", callback_data="help_rules")],
+        [InlineKeyboardButton("🗳️ Voting System", callback_data="help_voting")],
+        [InlineKeyboardButton("👑 Roles & Characters", callback_data="help_roles")],
+        [InlineKeyboardButton("🏆 Scoring System", callback_data="help_scoring")],
+        [InlineKeyboardButton("⚙️ Commands", callback_data="help_commands")],
+        [InlineKeyboardButton("❓ FAQ", callback_data="help_faq")],
+    ])
+    
+    await query.edit_message_text(help_text, reply_markup=keyboard, parse_mode='Markdown')
+
+
+async def show_detailed_help(query, help_type):
+    """Show detailed help page based on type"""
+    help_pages = {
+        "help_start": {
+            "title": "🎮 ဘယ်လို စတင်မလဲ?",
+            "content": """
+**Setup လုပ်ခြင်း:**
+
+1️⃣ Bot ကို သင့် group chat မှာ ထည့်ပါ
+   • Admin permissions ပေးပါ
+   • Members အများကြီး invite လုပ်ပါ (အနည်းဆုံး 9 ယောက်)
+
+2️⃣ Game စတင်ခြင်း:
+   • `/newgame` command ပို့ပါ
+   • Lobby ပေါ်လာမယ်
+
+3️⃣ Players ဝင်ရောက်ခြင်း:
+   • "Join Game" button ကို နှိပ်ပါ
+   • 9 players ပြည့်ရင် game စတင်ပါမယ်
+
+4️⃣ Team Formation:
+   • Game က automatically 3 teams ခွဲပါမယ်
+   • Team တခုမှာ 3 players ရှိပါမယ်
+   • Team leader ကို random ရွေးပါမယ်
+
+5️⃣ Voting Rounds:
+   • 5 rounds ရှိပါမယ်
+   • Round တိုင်းမှာ character 4 ခု ပြပါမယ်
+   • Team chat နှင့် private chat မှာ vote လုပ်နိုင်ပါတယ်
+
+6️⃣ Results:
+   • Round ပြီးတိုင်း ရလဒ် ပြပါမယ်
+   • Game ပြီးရင် winner team ကြေညာပါမယ်
+
+**Tips:**
+✅ Internet connection ကောင်းကောင်း ရှိပါစေ
+✅ Private chat မှာ bot ကို start လုပ်ထားပါ
+✅ Team members တွေနဲ့ ညှိနှိုင်းဖို့ အဆင်သင့်ပါ
+"""
+        },
+        "help_rules": {
+            "title": "📜 Game Rules",
+            "content": """
+**အခြေခံ Rules:**
+
+👥 **Players:**
+   • Total: 9 players
+   • Teams: 3 teams (3 players each)
+   • Leader: Team တခုစီမှာ 1 leader
+
+⏱️ **Time Limits:**
+   • Voting: 60-120 seconds per round
+   • Discussion: Team chat မှာ အချိန်မရှိ
+
+🎯 **Rounds:**
+   • Total: 5 rounds
+   • Each round has a specific role
+   • Characters နှင့် roles ကို AI က match လုပ်ပါမယ်
+
+🏆 **Winning:**
+   • Highest total score wins
+   • AI က character-role matching ကို score လုပ်ပါမယ်
+   • Perfect match = 10 points
+   • Good match = 7 points
+   • Average match = 5 points
+   • Poor match = 3 points
+
+⚖️ **Fairness:**
+   • Character reuse: Round 3 ခု ပြီးမှသာ ထပ်သုံးနိုင်ပါတယ်
+   • Random team formation
+   • AI-based objective scoring
+   • All players vote simultaneously
+
+❌ **Restrictions:**
+   • Late votes are rejected
+   • One vote per player per round
+   • Cannot change vote after submission
+   • Game တပွဲစီ သီးခြားလုံးဝ သီးခြားဖြစ်ပါမယ်
+"""
+        },
+        "help_voting": {
+            "title": "🗳️ Voting System",
+            "content": """
+**Vote လုပ်နည်း:**
+
+📋 **Character Selection:**
+   • Round တိုင်းမှာ character 4 ခု ပြပါမယ်
+   • သင့် team ရဲ့ အလှည့်ဆိုရင် vote လုပ်နိုင်ပါတယ်
+   • တခုတည်းသာ ရွေးချယ်နိုင်ပါတယ်
+
+🗨️ **Voting Locations:**
+   • **Team Chat:** Team members တွေ မြင်ပါမယ်
+   • **Private Chat:** Bot က သင့်ကို message ပို့ပါမယ်
+
+⚡ **Real-time Updates:**
+   • Vote လုပ်တာနဲ့ team members တွေ သိပါမယ်
+   • "X voted for Y" notification ရပါမယ်
+   • Vote count real-time update ဖြစ်ပါမယ်
+
+🎲 **Vote Resolution:**
+
+**Case 1: Clear Majority (e.g., 2:1 or 3:0)**
+   ✅ Most voted character wins
+
+**Case 2: Leader vs Others (1:1:1)**
+   👑 Leader's vote wins
+   • Team leader ရဲ့ vote က priority ရှိပါတယ်
+
+**Case 3: Tie without Leader (1:1, no leader)**
+   ⏰ First voter wins
+   • အရင်ဆုံး vote လုပ်သူရဲ့ choice က win ပါမယ်
+
+**Case 4: All Different (1:1:1 with leader)**
+   👑 Leader's vote wins
+
+⏱️ **Time Management:**
+   • Vote လုပ်ဖို့ 60-120 seconds
+   • Time ကုန်ရင် မဲမထည့်သေးသူတွေ random ရွေးပါမယ်
+   • Late votes are rejected
+
+✅ **Confirmation:**
+   • Vote လုပ်ပြီးရင် confirmation message ရပါမယ်
+   • Role name နှင့် character name ပြပါမယ်
+   • Vote ပြောင်းလို့ မရပါဘူး
+"""
+        },
+        "help_roles": {
+            "title": "👑 Roles & Characters",
+            "content": """
+**5 Rounds, 5 Roles:**
+
+**Round 1: 👑 ဘုရင် (King/Queen)**
+   • လိုအပ်သော စွမ်းရည်များ:
+     - Leadership
+     - Decision making
+     - Strategic thinking
+   • ဥပမာ MBTI: ENTJ, ENFJ, ESTJ
+   • ဥပမာ Zodiac: Leo, Aries, Capricorn
+
+**Round 2: ⚔️ စစ်သူကြီး (General)**
+   • လိုအပ်သော စွမ်းရည်များ:
+     - Courage
+     - Tactical skills
+     - Quick decision
+   • ဥပမာ MBTI: ESTP, ISTP, ENTJ
+   • ဥပမာ Zodiac: Aries, Scorpio, Sagittarius
+
+**Round 3: 🧠 အကြံပေး (Advisor)**
+   • လိုအပ်သော စွမ်းရည်များ:
+     - Wisdom
+     - Analysis
+     - Problem solving
+   • ဥပမာ MBTI: INTJ, INTP, INFJ
+   • ဥပမာ Zodiac: Virgo, Aquarius, Gemini
+
+**Round 4: 🌾 လယ်သမား (Farmer)**
+   • လိုအပ်သော စွမ်းရည်များ:
+     - Resource management
+     - Hard work
+     - Practicality
+   • ဥပမာ MBTI: ISTJ, ISFJ, ESTJ
+   • ဥပမာ Zodiac: Taurus, Virgo, Capricorn
+
+**Round 5: 🙏 ဘုန်းကြီး (Monk)**
+   • လိုအပ်သော စွမ်းရည်များ:
+     - Wisdom
+     - Calmness
+     - Diplomacy
+   • ဥပမာ MBTI: INFJ, INFP, ISFP
+   • ဥပမာ Zodiac: Pisces, Cancer, Libra
+
+**Character System:**
+   • MBTI: 16 personality types
+   • Zodiac: 12 astrological signs
+   • AI က MBTI + Zodiac သုံးပြီး role နှင့် match လုပ်ပါမယ်
+   • Character description တွေလည်း ထည့်တွက်ပါတယ်
+
+**Character Reuse:**
+   • Same character: Round 3 ခု ကြာမှ ထပ်သုံးနိုင်ပါတယ်
+   • ဒါကြောင့် variety ရှိပါမယ်
+   • Database မှာ character အများကြီး ရှိပါတယ်
+"""
+        },
+        "help_scoring": {
+            "title": "🏆 Scoring System",
+            "content": """
+**AI-based Scoring:**
+
+🤖 **Google Gemini AI:**
+   • Character profiles ကို analyze လုပ်ပါမယ်
+   • MBTI နှင့် Zodiac compatibility စစ်ပါမယ်
+   • Role requirements နှင့် match လုပ်ပါမယ်
+
+📊 **Score Distribution:**
+
+**Perfect Match (10 points):**
+   ✅ MBTI perfectly suits role
+   ✅ Zodiac strongly supports role
+   ✅ Character traits align 100%
+
+**Good Match (7 points):**
+   ✅ MBTI suits role well
+   ✅ Zodiac moderately supports
+   ✅ Character traits align 70-90%
+
+**Average Match (5 points):**
+   ⚠️ MBTI somewhat suits role
+   ⚠️ Zodiac neutral
+   ⚠️ Character traits align 50-70%
+
+**Poor Match (3 points):**
+   ❌ MBTI doesn't suit role well
+   ❌ Zodiac may conflict
+   ❌ Character traits align <50%
+
+**Minimum (1 point):**
+   ❌ Complete mismatch
+   ❌ AI couldn't find compatibility
+
+💯 **Total Score:**
+   • Each team: 5 rounds × 10 max = 50 points
+   • Winner: Highest total score
+   • Tie: Multiple winners possible
+
+📈 **Scoring Factors:**
+   1. MBTI-Role compatibility (40%)
+   2. Zodiac-Role compatibility (30%)
+   3. Character description analysis (20%)
+   4. Overall synergy (10%)
+
+🎯 **Strategy Tips:**
+   • ဘာစီးရှည်စဉ်းစားပါ role requirements ကို
+   • MBTI နှင့် Zodiac သိထားပါ
+   • Team coordination အရေးကြီးပါတယ်
+   • Leader ရဲ့ decision က အရေးကြီးပါတယ်
+"""
+        },
+        "help_commands": {
+            "title": "⚙️ Available Commands",
+            "content": """
+**Player Commands:**
+
+`/start`
+   • Bot ကို စတင်ပါ
+   • Private chat: Welcome message
+   • Group chat: New game option
+
+`/newgame`
+   • Game အသစ် ဖန်တီးပါ
+   • Group chat မှာသာ သုံးနိုင်ပါတယ်
+   • Lobby ပေါ်လာမယ်
+
+`/help`
+   • အကူအညီ menu ဖွင့်ပါ
+   • အသေးစိတ် လမ်းညွှန်ချက်များ
+
+`/cancelgame`
+   • လက်ရှိ game ကို ဖျက်ပါ
+   • Lobby stage မှာသာ သုံးနိုင်ပါတယ်
+   • Game creator သာ ဖျက်နိုင်ပါတယ်
+
+`/addcharacter`
+   • Character အသစ် ထည့်ပါ
+   • Admin password လိုအပ်ပါတယ်
+   • Name, MBTI, Zodiac ထည့်ရပါမယ်
+
+`/listcharacters`
+   • Database မှာရှိတဲ့ characters တွေ ကြည့်ပါ
+   • Total count ပြပါမယ်
+
+**Button Actions:**
+
+🎮 **Join Game**
+   • Lobby မှာ game ဝင်ရန်
+
+🚪 **Leave Game**
+   • Lobby မှာ game ထွက်ရန်
+
+🗳️ **Vote Buttons**
+   • Character ရွေးချယ်ရန်
+
+📊 **Details Button**
+   • Round results အသေးစိတ် ကြည့်ရန်
+
+🔙 **Back Button**
+   • ပြန်သွားရန်
+
+**Admin Features:**
+   • Password protected
+   • Character management
+   • Game data access
+"""
+        },
+        "help_faq": {
+            "title": "❓ Frequently Asked Questions",
+            "content": """
+**Q: Bot ကို private chat မှာ စတင်ရမှာလား?**
+A: မလိုပါဘူး။ Group chat မှာ တည့်ငေ `/newgame` ပို့နိုင်ပါတယ်။ ဒါပေမယ့် private messages ရဖို့ start လုပ်ထားသင့်ပါတယ်။
+
+**Q: 9 players မပြည့်ရင် ဘာဖြစ်မလဲ?**
+A: Game မစပါဘူး။ 9 players ပြည့်မှ game စပါမယ်။
+
+**Q: Vote ပြောင်းလို့ရလား?**
+A: မရပါဘူး။ Vote submit လုပ်ပြီးရင် ပြောင်းလို့မရတော့ပါ။
+
+**Q: Time ကုန်ပြီး vote မလုပ်ရသေးရင်?**
+A: System က random character ရွေးပေးပါမယ်။
+
+**Q: Character များ ထပ်သုံးလို့ရလား?**
+A: Round 3 ခု ကြာပြီးမှ ထပ်သုံးနိုင်ပါတယ်။
+
+**Q: Team ကို ကိုယ်တိုင်ရွေးလို့ရလား?**
+A: မရပါဘူး။ Random team formation ဖြစ်ပါတယ်။
+
+**Q: AI scoring ကို ဘယ်လို အလုပ်လုပ်သလဲ?**
+A: Google Gemini AI က MBTI, Zodiac နှင့် character traits ကို analyze လုပ်ပြီး role နှင့် match လုပ်ပါတယ်။
+
+**Q: Game အလယ်မှာ ထွက်လို့ရလား?**
+A: Lobby stage မှာသာ quit လုပ်လို့ရပါတယ်။ Game စပြီးရင် ထွက်လို့မရပါဘူး။
+
+**Q: Private message မရရင်?**
+A: Bot ကို private chat မှာ `/start` ပို့ပါ။ Bot ကို block မလုပ်ထားကြောင်း သေချာပါ။
+
+**Q: ဘယ်လို character ထည့်မလဲ?**
+A: `/addcharacter` သုံးပါ။ Admin password လိုအပ်ပါတယ်။
+
+**Q: Error ဖြစ်ရင် ဘယ်လိုလုပ်မလဲ?**
+A: `/cancelgame` နဲ့ game ဖျက်ပြီး ထပ်စမ်းကြည့်ပါ။ ဆက်မရရင် bot ကို restart လုပ်ပါ။
+
+**Q: Score တူရင် ဘာဖြစ်မလဲ?**
+A: Multiple winners ဖြစ်နိုင်ပါတယ်။ Both teams win ပါမယ်။
+
+**ထပ်မံ မေးခွန်းများ ရှိရင် @admin ကို ဆက်သွယ်ပါ။**
+"""
+        }
+    }
+    
+    page = help_pages.get(help_type)
+    if not page:
+        await query.answer("Invalid help page", show_alert=True)
+        return
+    
+    # Create back button
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🔙 Back to Help Menu", callback_data="show_help")]
+    ])
+    
+    full_text = f"**{page['title']}**\n{page['content']}"
+    
+    await query.edit_message_text(full_text, reply_markup=keyboard, parse_mode='Markdown')
+
+
 async def help_callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle help button callback"""
     query = update.callback_query
     await query.answer()
     
-    logger.debug(f"User {query.from_user.id} pressed help button")
+    # Check if it's detailed help page request
+    if query.data.startswith("help_"):
+        await show_detailed_help(query, query.data)
+        return
     
-    help_text = """
-📖 **အကူအညီ**
-
-**ဘယ်လို ကစားရမလဲ?**
-
-1. Bot ကို group chat မှာ ထည့်ပါ
-2. `/newgame` နဲ့ lobby ဖန်တီးပါ
-3. Join button ကို နှိပ်ပြီး ဝင်ရောက်ပါ
-4. 9 players ပြည့်ရင် game အလိုအလျောက် စတင်ပါမယ်
-5. Team 3 ခု random ခွဲပါမယ်
-6. Round 5 ခု voting လုပ်ရပါမယ်
-7. AI က scoring လုပ်ပြီး အနိုင်ကို သတ်မှတ်ပါမယ်
-
-**Roles:**
-• Round 1: ဘုရင် (ဦးဆောင်နိုင်တဲ့သူ)
-• Round 2: စစ်သူကြီး (သတ္တိရှိသူ)
-• Round 3: အကြံပေး (ဉာဏ်ပညာရှိသူ)
-• Round 4: လယ်သမား (စီးပွားရှာတတ်သူ)
-• Round 5: ဘုန်းကြီး (လိမ္မာယဥ်ကျေးသူ)
-
-**Voting:**
-• Team တိုင်းကို character 4 ခု ပြပါမယ်
-• 60 seconds အတွင်း ရွေးချယ်ရပါမယ်
-• အများဆုံး မဲရတဲ့ character ကို ရွေးပါမယ်
-
-Have fun! 🎉
-"""
-    await query.edit_message_text(help_text, parse_mode='Markdown')
+    # Show main help menu
+    await show_main_help_menu(query)
 
 
 async def back_callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -897,7 +1242,7 @@ def main():
     app.add_handler(CallbackQueryHandler(vote_callback_handler, pattern="^vote_"))
     app.add_handler(CallbackQueryHandler(details_callback_handler, pattern="^details_"))
     app.add_handler(CallbackQueryHandler(back_callback_handler, pattern="^back_"))
-    app.add_handler(CallbackQueryHandler(help_callback_handler, pattern="^show_help$"))
+    app.add_handler(CallbackQueryHandler(help_callback_handler, pattern="^(show_help|help_.*)$"))
     app.add_handler(CallbackQueryHandler(start_newgame_callback_handler, pattern="^start_newgame$"))
     
     # Team chat handler (should be last to not interfere with commands)
