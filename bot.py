@@ -857,7 +857,9 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ==================== Main ====================
 
 async def post_init(app: Application) -> None:
-    """Initialize database after application is ready"""
+    """Initialize database connection pool and tables after application is ready"""
+    await db_manager.create_pool()
+    logger.info("Database connection pool created")
     await db_manager.init_database()
     logger.info("Database initialized")
 

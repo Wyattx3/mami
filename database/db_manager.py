@@ -1,7 +1,7 @@
 """
-Database manager for SQLite operations
+Database manager for PostgreSQL operations (Neon)
 """
-import aiosqlite
+import asyncpg
 import json
 import logging
 from typing import List, Optional, Dict, Any
@@ -16,19 +16,44 @@ logger = logging.getLogger(__name__)
 
 
 class DatabaseManager:
-    """Manages all database operations"""
+    """Manages all PostgreSQL database operations"""
     
-    def __init__(self, db_path: str = config.DATABASE_PATH):
-        self.db_path = db_path
+    def __init__(self, database_url: str = None):
+        self.database_url = database_url or config.DATABASE_URL
+        self.pool = None
+    
+    async def create_pool(self):
+        """Create database connection pool"""
+        if not self.pool:
+            logger.info("Creating database connection pool...")
+            self.pool = await asyncpg.create_pool(
+                self.database_url,
+                min_size=1,
+                max_size=10,
+                command_timeout=60
+            )
+            logger.info("Database connection pool created")
+    
+    async def close_pool(self):
+        """Close database connection pool"""
+        if self.pool:
+            logger.info("Closing database connection pool...")
+            await self.pool.close()
+            self.pool = None
+            logger.info("Database connection pool closed")
     
     async def init_database(self):
         """Initialize database and create tables"""
         logger.info("Initializing database...")
-        async with aiosqlite.connect(self.db_path) as db:
+        
+        if not self.pool:
+            await self.create_pool()
+        
+        async with self.pool.acquire() as conn:
             # Characters table
-            await db.execute('''
+            await conn.execute('''
                 CREATE TABLE IF NOT EXISTS characters (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     name TEXT NOT NULL UNIQUE,
                     mbti TEXT NOT NULL,
                     zodiac TEXT NOT NULL,
@@ -39,36 +64,36 @@ class DatabaseManager:
             ''')
             
             # Games table
-            await db.execute('''
+            await conn.execute('''
                 CREATE TABLE IF NOT EXISTS games (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     status TEXT NOT NULL,
                     created_at TIMESTAMP NOT NULL,
                     winner_team INTEGER,
                     current_round INTEGER DEFAULT 0,
-                    lobby_message_id INTEGER,
-                    lobby_chat_id INTEGER
+                    lobby_message_id BIGINT,
+                    lobby_chat_id BIGINT
                 )
             ''')
             
             # Game players table
-            await db.execute('''
+            await conn.execute('''
                 CREATE TABLE IF NOT EXISTS game_players (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     game_id INTEGER NOT NULL,
-                    user_id INTEGER NOT NULL,
+                    user_id BIGINT NOT NULL,
                     username TEXT,
                     team_number INTEGER NOT NULL,
                     is_leader INTEGER DEFAULT 0,
-                    FOREIGN KEY (game_id) REFERENCES games (id),
+                    FOREIGN KEY (game_id) REFERENCES games (id) ON DELETE CASCADE,
                     UNIQUE(game_id, user_id)
                 )
             ''')
             
             # Game rounds table
-            await db.execute('''
+            await conn.execute('''
                 CREATE TABLE IF NOT EXISTS game_rounds (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     game_id INTEGER NOT NULL,
                     round_number INTEGER NOT NULL,
                     role TEXT NOT NULL,
@@ -77,23 +102,22 @@ class DatabaseManager:
                     votes TEXT,
                     score INTEGER,
                     explanation TEXT,
-                    FOREIGN KEY (game_id) REFERENCES games (id),
+                    FOREIGN KEY (game_id) REFERENCES games (id) ON DELETE CASCADE,
                     FOREIGN KEY (selected_character_id) REFERENCES characters (id),
                     UNIQUE(game_id, round_number, team_id)
                 )
             ''')
             
             # Lobby queue table
-            await db.execute('''
+            await conn.execute('''
                 CREATE TABLE IF NOT EXISTS lobby_queue (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER NOT NULL UNIQUE,
+                    id SERIAL PRIMARY KEY,
+                    user_id BIGINT NOT NULL UNIQUE,
                     username TEXT,
                     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
             
-            await db.commit()
         logger.info("Database initialized successfully")
     
     # ==================== Character Operations ====================
@@ -101,27 +125,23 @@ class DatabaseManager:
     async def add_character(self, character: Character) -> int:
         """Add a new character"""
         logger.debug(f"Adding character: {character.name} (MBTI: {character.mbti}, Zodiac: {character.zodiac})")
-        async with aiosqlite.connect(self.db_path) as db:
-            cursor = await db.execute(
+        async with self.pool.acquire() as conn:
+            char_id = await conn.fetchval(
                 '''INSERT INTO characters (name, mbti, zodiac, description, personality_traits)
-                   VALUES (?, ?, ?, ?, ?)''',
-                (character.name, character.mbti, character.zodiac, 
-                 character.description, character.personality_traits)
+                   VALUES ($1, $2, $3, $4, $5) RETURNING id''',
+                character.name, character.mbti, character.zodiac, 
+                character.description, character.personality_traits
             )
-            await db.commit()
-            char_id = cursor.lastrowid
             logger.info(f"Character added successfully: {character.name} (ID: {char_id})")
             return char_id
     
     async def get_character(self, character_id: int) -> Optional[Character]:
         """Get character by ID"""
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute(
-                'SELECT * FROM characters WHERE id = ?',
-                (character_id,)
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(
+                'SELECT * FROM characters WHERE id = $1',
+                character_id
             )
-            row = await cursor.fetchone()
             
             if row:
                 return Character(
@@ -140,19 +160,17 @@ class DatabaseManager:
             exclude_ids = []
         
         logger.debug(f"Fetching {n} random characters, excluding {len(exclude_ids)} IDs")
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            
+        async with self.pool.acquire() as conn:
             if exclude_ids:
-                placeholders = ','.join('?' * len(exclude_ids))
-                query = f'SELECT * FROM characters WHERE id NOT IN ({placeholders}) ORDER BY RANDOM() LIMIT ?'
-                cursor = await db.execute(query, (*exclude_ids, n))
-            else:
-                cursor = await db.execute(
-                    'SELECT * FROM characters ORDER BY RANDOM() LIMIT ?',
-                    (n,)
+                rows = await conn.fetch(
+                    'SELECT * FROM characters WHERE id <> ALL($1::int[]) ORDER BY RANDOM() LIMIT $2',
+                    exclude_ids, n
                 )
-            rows = await cursor.fetchall()
+            else:
+                rows = await conn.fetch(
+                    'SELECT * FROM characters ORDER BY RANDOM() LIMIT $1',
+                    n
+                )
             
             characters = []
             for row in rows:
@@ -169,10 +187,8 @@ class DatabaseManager:
     
     async def get_all_characters(self) -> List[Character]:
         """Get all characters"""
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute('SELECT * FROM characters')
-            rows = await cursor.fetchall()
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch('SELECT * FROM characters')
             
             characters = []
             for row in rows:
@@ -189,10 +205,9 @@ class DatabaseManager:
     
     async def get_character_count(self) -> int:
         """Get total number of characters"""
-        async with aiosqlite.connect(self.db_path) as db:
-            cursor = await db.execute('SELECT COUNT(*) FROM characters')
-            row = await cursor.fetchone()
-            return row[0] if row else 0
+        async with self.pool.acquire() as conn:
+            count = await conn.fetchval('SELECT COUNT(*) FROM characters')
+            return count if count else 0
     
     # ==================== Lobby Operations ====================
     
@@ -200,28 +215,26 @@ class DatabaseManager:
         """Add player to lobby queue"""
         logger.debug(f"Adding player to lobby: {username} (ID: {user_id})")
         try:
-            async with aiosqlite.connect(self.db_path) as db:
-                await db.execute(
-                    'INSERT INTO lobby_queue (user_id, username) VALUES (?, ?)',
-                    (user_id, username)
+            async with self.pool.acquire() as conn:
+                await conn.execute(
+                    'INSERT INTO lobby_queue (user_id, username) VALUES ($1, $2)',
+                    user_id, username
                 )
-                await db.commit()
                 logger.info(f"Player added to lobby: {username}")
                 return True
-        except aiosqlite.IntegrityError:
+        except asyncpg.UniqueViolationError:
             logger.warning(f"Player already in lobby: {username}")
-            return False  # Already in queue
+            return False
     
     async def remove_from_lobby(self, user_id: int) -> bool:
         """Remove player from lobby queue"""
         logger.debug(f"Removing player from lobby: User ID {user_id}")
-        async with aiosqlite.connect(self.db_path) as db:
-            cursor = await db.execute(
-                'DELETE FROM lobby_queue WHERE user_id = ?',
-                (user_id,)
+        async with self.pool.acquire() as conn:
+            result = await conn.execute(
+                'DELETE FROM lobby_queue WHERE user_id = $1',
+                user_id
             )
-            await db.commit()
-            removed = cursor.rowcount > 0
+            removed = result != 'DELETE 0'
             if removed:
                 logger.info(f"Player removed from lobby: User ID {user_id}")
             else:
@@ -230,12 +243,10 @@ class DatabaseManager:
     
     async def get_lobby_players(self) -> List[Dict[str, Any]]:
         """Get all players in lobby"""
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute(
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch(
                 'SELECT user_id, username FROM lobby_queue ORDER BY joined_at'
             )
-            rows = await cursor.fetchall()
             
             return [
                 {'user_id': row['user_id'], 'username': row['username']}
@@ -244,42 +255,37 @@ class DatabaseManager:
     
     async def get_lobby_count(self) -> int:
         """Get number of players in lobby"""
-        async with aiosqlite.connect(self.db_path) as db:
-            cursor = await db.execute('SELECT COUNT(*) FROM lobby_queue')
-            row = await cursor.fetchone()
-            return row[0] if row else 0
+        async with self.pool.acquire() as conn:
+            count = await conn.fetchval('SELECT COUNT(*) FROM lobby_queue')
+            return count if count else 0
     
     async def clear_lobby(self, chat_id: int = None):
         """Clear all players from lobby"""
         logger.info(f"Clearing lobby queue (chat_id: {chat_id})")
-        async with aiosqlite.connect(self.db_path) as db:
-            cursor = await db.execute('DELETE FROM lobby_queue')
-            await db.commit()
-            logger.debug(f"Cleared {cursor.rowcount} players from lobby")
+        async with self.pool.acquire() as conn:
+            result = await conn.execute('DELETE FROM lobby_queue')
+            logger.debug(f"Cleared lobby: {result}")
     
     # ==================== Game Operations ====================
     
     async def create_game(self, lobby_message_id: int = None, lobby_chat_id: int = None) -> int:
         """Create a new game"""
         logger.info("Creating new game...")
-        async with aiosqlite.connect(self.db_path) as db:
-            cursor = await db.execute(
+        async with self.pool.acquire() as conn:
+            game_id = await conn.fetchval(
                 '''INSERT INTO games (status, created_at, lobby_message_id, lobby_chat_id)
-                   VALUES (?, ?, ?, ?)''',
-                ('lobby', datetime.now().isoformat(), lobby_message_id, lobby_chat_id)
+                   VALUES ($1, $2, $3, $4) RETURNING id''',
+                'lobby', datetime.now(), lobby_message_id, lobby_chat_id
             )
-            await db.commit()
-            return cursor.lastrowid
+            return game_id
     
     async def get_game(self, game_id: int) -> Optional[Game]:
         """Get game by ID"""
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute(
-                'SELECT * FROM games WHERE id = ?',
-                (game_id,)
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow(
+                'SELECT * FROM games WHERE id = $1',
+                game_id
             )
-            row = await cursor.fetchone()
             
             if row:
                 return Game.from_dict(dict(row))
@@ -288,61 +294,55 @@ class DatabaseManager:
     async def update_game_status(self, game_id: int, status: str):
         """Update game status"""
         logger.debug(f"Updating game {game_id} status to: {status}")
-        async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(
-                'UPDATE games SET status = ? WHERE id = ?',
-                (status, game_id)
+        async with self.pool.acquire() as conn:
+            await conn.execute(
+                'UPDATE games SET status = $1 WHERE id = $2',
+                status, game_id
             )
-            await db.commit()
         logger.info(f"Game {game_id} status updated to: {status}")
     
     async def update_game_round(self, game_id: int, round_number: int):
         """Update current round"""
-        async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(
-                'UPDATE games SET current_round = ? WHERE id = ?',
-                (round_number, game_id)
+        async with self.pool.acquire() as conn:
+            await conn.execute(
+                'UPDATE games SET current_round = $1 WHERE id = $2',
+                round_number, game_id
             )
-            await db.commit()
     
     async def set_game_winner(self, game_id: int, team_number: int):
         """Set game winner"""
-        async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(
-                'UPDATE games SET winner_team = ?, status = ? WHERE id = ?',
-                (team_number, 'finished', game_id)
+        async with self.pool.acquire() as conn:
+            await conn.execute(
+                'UPDATE games SET winner_team = $1, status = $2 WHERE id = $3',
+                team_number, 'finished', game_id
             )
-            await db.commit()
     
     # ==================== Game Players Operations ====================
     
     async def add_game_players(self, game_id: int, players: List[Dict[str, Any]]):
         """Add players to a game with team assignments and leader status"""
         logger.debug(f"Adding {len(players)} players to game {game_id}")
-        async with aiosqlite.connect(self.db_path) as db:
+        async with self.pool.acquire() as conn:
             for player in players:
-                await db.execute(
+                await conn.execute(
                     '''INSERT INTO game_players (game_id, user_id, username, team_number, is_leader)
-                       VALUES (?, ?, ?, ?, ?)''',
-                    (game_id, player['user_id'], player['username'], player['team_number'], 
-                     player.get('is_leader', False))
+                       VALUES ($1, $2, $3, $4, $5)''',
+                    game_id, player['user_id'], player['username'], player['team_number'], 
+                    int(player.get('is_leader', False))
                 )
-            await db.commit()
         logger.info(f"Added {len(players)} players to game {game_id}")
     
     async def get_game_players(self, game_id: int) -> Dict[int, List[Dict[str, Any]]]:
         """Get all players in a game, organized by team"""
         logger.debug(f"Getting players for game {game_id}")
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute(
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch(
                 '''SELECT user_id, username, team_number, is_leader 
                    FROM game_players 
-                   WHERE game_id = ? 
+                   WHERE game_id = $1 
                    ORDER BY team_number, id''',
-                (game_id,)
+                game_id
             )
-            rows = await cursor.fetchall()
             
             teams = {}
             for row in rows:
@@ -361,14 +361,12 @@ class DatabaseManager:
     async def is_user_in_game(self, game_id: int, user_id: int) -> bool:
         """Check if user is in a specific game"""
         logger.debug(f"Checking if user {user_id} is in game {game_id}")
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute(
-                'SELECT COUNT(*) as count FROM game_players WHERE game_id = ? AND user_id = ?',
-                (game_id, user_id)
+        async with self.pool.acquire() as conn:
+            count = await conn.fetchval(
+                'SELECT COUNT(*) FROM game_players WHERE game_id = $1 AND user_id = $2',
+                game_id, user_id
             )
-            row = await cursor.fetchone()
-            is_in_game = row['count'] > 0 if row else False
+            is_in_game = count > 0
             logger.debug(f"User {user_id} in game {game_id}: {is_in_game}")
             return is_in_game
     
@@ -380,41 +378,39 @@ class DatabaseManager:
         """Save round selection"""
         logger.debug(f"Saving round selection - Game: {game_id}, Round: {round_number}, Team: {team_id}, Character: {character_id}")
         votes_json = json.dumps(votes)
-        async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(
-                '''INSERT OR REPLACE INTO game_rounds 
+        async with self.pool.acquire() as conn:
+            await conn.execute(
+                '''INSERT INTO game_rounds 
                    (game_id, round_number, role, team_id, selected_character_id, votes)
-                   VALUES (?, ?, ?, ?, ?, ?)''',
-                (game_id, round_number, role, team_id, character_id, votes_json)
+                   VALUES ($1, $2, $3, $4, $5, $6)
+                   ON CONFLICT (game_id, round_number, team_id) 
+                   DO UPDATE SET selected_character_id = $5, votes = $6, role = $3''',
+                game_id, round_number, role, team_id, character_id, votes_json
             )
-            await db.commit()
         logger.info(f"Round selection saved - Game: {game_id}, Round: {round_number}, Team: {team_id}")
     
     async def save_round_score(self, game_id: int, round_number: int, 
                                team_id: int, score: int, explanation: str):
         """Save round score and explanation"""
         logger.debug(f"Saving round score - Game: {game_id}, Round: {round_number}, Team: {team_id}, Score: {score}")
-        async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(
+        async with self.pool.acquire() as conn:
+            await conn.execute(
                 '''UPDATE game_rounds 
-                   SET score = ?, explanation = ?
-                   WHERE game_id = ? AND round_number = ? AND team_id = ?''',
-                (score, explanation, game_id, round_number, team_id)
+                   SET score = $1, explanation = $2
+                   WHERE game_id = $3 AND round_number = $4 AND team_id = $5''',
+                score, explanation, game_id, round_number, team_id
             )
-            await db.commit()
         logger.info(f"Round score saved - Game: {game_id}, Round: {round_number}, Team: {team_id}, Score: {score}")
     
     async def get_game_rounds(self, game_id: int) -> List[GameRound]:
         """Get all rounds for a game"""
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute(
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch(
                 '''SELECT * FROM game_rounds 
-                   WHERE game_id = ? 
+                   WHERE game_id = $1 
                    ORDER BY round_number, team_id''',
-                (game_id,)
+                game_id
             )
-            rows = await cursor.fetchall()
             
             rounds = []
             for row in rows:
@@ -424,15 +420,13 @@ class DatabaseManager:
     
     async def get_team_rounds(self, game_id: int, team_id: int) -> List[GameRound]:
         """Get all rounds for a specific team"""
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute(
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch(
                 '''SELECT * FROM game_rounds 
-                   WHERE game_id = ? AND team_id = ? 
+                   WHERE game_id = $1 AND team_id = $2 
                    ORDER BY round_number''',
-                (game_id, team_id)
+                game_id, team_id
             )
-            rows = await cursor.fetchall()
             
             rounds = []
             for row in rows:
@@ -442,19 +436,17 @@ class DatabaseManager:
     
     async def get_game_results(self, game_id: int) -> Dict[int, Dict[str, Any]]:
         """Get final results for all teams"""
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute(
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch(
                 '''SELECT gr.team_id, gr.round_number, gr.role, 
                           gr.selected_character_id, gr.score, gr.explanation,
                           c.name as character_name
                    FROM game_rounds gr
                    LEFT JOIN characters c ON gr.selected_character_id = c.id
-                   WHERE gr.game_id = ?
+                   WHERE gr.game_id = $1
                    ORDER BY gr.team_id, gr.round_number''',
-                (game_id,)
+                game_id
             )
-            rows = await cursor.fetchall()
             
             results = {}
             for row in rows:
@@ -490,13 +482,11 @@ class DatabaseManager:
             List of character IDs used by this team
         """
         logger.debug(f"Getting used characters for game {game_id}, team {team_id}")
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute('''
+        async with self.pool.acquire() as conn:
+            rows = await conn.fetch('''
                 SELECT DISTINCT selected_character_id FROM game_rounds
-                WHERE game_id = ? AND team_id = ? AND selected_character_id IS NOT NULL
-            ''', (game_id, team_id))
-            rows = await cursor.fetchall()
+                WHERE game_id = $1 AND team_id = $2 AND selected_character_id IS NOT NULL
+            ''', game_id, team_id)
             
             used_ids = [row['selected_character_id'] for row in rows]
             logger.debug(f"Team {team_id} has used {len(used_ids)} characters: {used_ids}")
@@ -512,25 +502,19 @@ class DatabaseManager:
             True if user is in an active game or lobby
         """
         logger.debug(f"Checking if user {user_id} is in active game or lobby")
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            
+        async with self.pool.acquire() as conn:
             # Check if user is in an active game
-            cursor = await db.execute('''
-                SELECT COUNT(*) as count FROM game_players p
+            game_count = await conn.fetchval('''
+                SELECT COUNT(*) FROM game_players p
                 INNER JOIN games g ON p.game_id = g.id
-                WHERE p.user_id = ? AND g.status IN ('lobby', 'in_progress')
-            ''', (user_id,))
-            row = await cursor.fetchone()
-            game_count = row['count'] if row else 0
+                WHERE p.user_id = $1 AND g.status IN ('lobby', 'in_progress')
+            ''', user_id)
             
             # Check if user is in any lobby queue
-            cursor = await db.execute('''
-                SELECT COUNT(*) as count FROM lobby_queue
-                WHERE user_id = ?
-            ''', (user_id,))
-            row = await cursor.fetchone()
-            lobby_count = row['count'] if row else 0
+            lobby_count = await conn.fetchval('''
+                SELECT COUNT(*) FROM lobby_queue
+                WHERE user_id = $1
+            ''', user_id)
             
             is_active = (game_count > 0) or (lobby_count > 0)
             logger.debug(f"User {user_id} - Active games: {game_count}, In lobby: {lobby_count}, Total active: {is_active}")
@@ -546,14 +530,11 @@ class DatabaseManager:
             True if channel has an active game
         """
         logger.debug(f"Checking if channel {chat_id} has active game")
-        async with aiosqlite.connect(self.db_path) as db:
-            db.row_factory = aiosqlite.Row
-            cursor = await db.execute('''
-                SELECT COUNT(*) as count FROM games
-                WHERE lobby_chat_id = ? AND status IN ('lobby', 'in_progress')
-            ''', (chat_id,))
-            row = await cursor.fetchone()
-            count = row['count'] if row else 0
+        async with self.pool.acquire() as conn:
+            count = await conn.fetchval('''
+                SELECT COUNT(*) FROM games
+                WHERE lobby_chat_id = $1 AND status IN ('lobby', 'in_progress')
+            ''', chat_id)
             
             has_active = count > 0
             logger.debug(f"Channel {chat_id} active game status: {has_active}")
@@ -562,6 +543,3 @@ class DatabaseManager:
 
 # Global database manager instance
 db_manager = DatabaseManager()
-
-
-

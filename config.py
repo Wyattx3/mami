@@ -26,8 +26,18 @@ DEMO_MODE = LOBBY_SIZE == 1
 if DEMO_MODE:
     print("⚠️ DEMO MODE ENABLED - Single player testing")
 
-# Database Configuration
+# Database Configuration (PostgreSQL/Neon)
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+# Legacy SQLite path (for migration reference only)
 DATABASE_PATH = 'database/game.db'
+
+# Game Status Constants
+GAME_STATUS = {
+    'LOBBY': 'lobby',
+    'IN_PROGRESS': 'in_progress',
+    'FINISHED': 'finished'
+}
 
 # Validate required configurations
 if not TELEGRAM_BOT_TOKEN:
@@ -35,6 +45,9 @@ if not TELEGRAM_BOT_TOKEN:
 
 if not GEMINI_API_KEY:
     raise ValueError("GEMINI_API_KEY must be set in .env file")
+
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL must be set in .env file")
 
 
 

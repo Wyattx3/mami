@@ -276,3 +276,4 @@ And game works without errors, you're all set! 🚀
 **Commit:** 4029b78  
 **Fix:** Database schema includes is_leader column
 
+
