@@ -147,7 +147,18 @@ class GameHandler:
             [InlineKeyboardButton("🤖 Go to Bot", url=f"https://t.me/{bot_username}")]
         ])
         
-        round_message = f"🎯 **Round {round_number}: {role_name}**\n\n✅ Voting စတင်ပါပြီ!\n⏱️ {self.round_time} စက္ကန့်\n\n👉 Bot ထံသို့ သွားပြီး vote ပေးပါ!"
+        round_message = f"""╔═══════════════════════╗
+║   🎯 ROUND {round_number}/5      ║
+╚═══════════════════════╝
+
+👑 **Role: {role_name}**
+
+✅ Voting စတင်ပါပြီ!
+⏱️  Time: {self.round_time} စက္ကန့်
+
+━━━━━━━━━━━━━━━━━━━━━━
+👉 Bot ထံသို့ သွားပြီး vote ပေးပါ!
+━━━━━━━━━━━━━━━━━━━━━━"""
         
         # Always send new message for each round
         msg = await context.bot.send_message(
@@ -213,8 +224,18 @@ class GameHandler:
         role_info = ROLES.get(round_number, {})
         role_name = role_info.get('name', 'Unknown')
         
-        lines = [f"✅ **Round {round_number}: {role_name}** - ပြီးဆုံးပါပြီ!\n"]
-        lines.append("📊 **Team Selections:**\n")
+        lines = [
+            f"╔═══════════════════════╗",
+            f"║   ✅ ROUND {round_number}/5      ║",
+            f"╚═══════════════════════╝",
+            "",
+            f"👑 **Role: {role_name}** - ပြီးဆုံးပါပြီ!",
+            "",
+            "━━━━━━━━━━━━━━━━━━━━━━",
+            "📊 **Team Selections:**",
+            "━━━━━━━━━━━━━━━━━━━━━━",
+            ""
+        ]
         
         for team_id in sorted(teams.keys()):
             team_name = get_team_name(teams[team_id])
@@ -222,11 +243,15 @@ class GameHandler:
             if char_id:
                 character = await db_manager.get_character(char_id)
                 if character:
-                    lines.append(f"• **{team_name}:** {character.name}")
+                    lines.append(f"✓  **{team_name}**")
+                    lines.append(f"   └─ {character.name}")
                 else:
-                    lines.append(f"• **{team_name}:** Unknown")
+                    lines.append(f"✓  **{team_name}**")
+                    lines.append(f"   └─ Unknown")
             else:
-                lines.append(f"• **{team_name}:** Optional (မဲမပေးခဲ့ပါ)")
+                lines.append(f"⚠️  **{team_name}**")
+                lines.append(f"   └─ No selection")
+            lines.append("")
         
         message = "\n".join(lines)
         
@@ -261,26 +286,49 @@ class GameHandler:
             
             # Build team result message
             lines = [
-                f"📊 **Game Results - {team_name}**\n",
-                f"🎮 Game ID: {game_id}\n"
+                "╔═══════════════════════╗",
+                "║   📊 YOUR RESULTS   ║",
+                "╚═══════════════════════╝",
+                "",
+                f"**{team_name}**",
+                f"🎮 Game ID: {game_id}",
+                ""
             ]
             
             # Show team's rounds
             if 'rounds' in team_data:
-                lines.append("**သင့် Team ရဲ့ ရလဒ်များ:**\n")
+                lines.append("━━━━━━━━━━━━━━━━━━━━━━")
+                lines.append("📋 **Round Results:**")
+                lines.append("━━━━━━━━━━━━━━━━━━━━━━")
+                lines.append("")
+                
                 for round_data in team_data['rounds']:
                     role = round_data.get('role', 'Unknown')
                     char_name = round_data.get('character_name', 'Optional')
                     score = round_data.get('score', 0)
-                    lines.append(f"• **{role}**: {char_name} ({score}/10 မှတ်)")
+                    lines.append(f"**{role}**")
+                    lines.append(f"  └─ {char_name}")
+                    lines.append(f"  └─ Score: {score}/10 မှတ်")
+                    lines.append("")
                 
-                lines.append(f"\n**Total Score:** {team_score} မှတ်\n")
+                lines.append("━━━━━━━━━━━━━━━━━━━━━━")
+                lines.append(f"💯 **Total Score:** {team_score} မှတ်")
+                lines.append("━━━━━━━━━━━━━━━━━━━━━━")
+                lines.append("")
             
             # Show winner
             if team_id == winner:
-                lines.append("🎉 **သင့် Team က အနိုင်ရခဲ့ပါတယ်!** 🎉")
+                lines.append("╔═══════════════════════╗")
+                lines.append("║   🎉 WINNER! 🎉    ║")
+                lines.append("╚═══════════════════════╝")
+                lines.append("")
+                lines.append("**သင့် Team က အနိုင်ရခဲ့ပါတယ်!**")
+                lines.append("Congratulations! 🏆")
             else:
-                lines.append(f"👑 **Winner:** {winner_team_name} ({winner_score} မှတ်)")
+                lines.append("━━━━━━━━━━━━━━━━━━━━━━")
+                lines.append(f"👑 **Winner:** {winner_team_name}")
+                lines.append(f"💯 Score: {winner_score} မှတ်")
+                lines.append("━━━━━━━━━━━━━━━━━━━━━━")
             
             private_message = "\n".join(lines)
             
@@ -319,7 +367,13 @@ class GameHandler:
         # Announce game finished
         calculating_msg = await context.bot.send_message(
             chat_id=chat_id,
-            text="🏁 **Game ပြီးဆုံးပါပြီ!**\n\nရလဒ်များကို တွက်ချက်နေပါသည်... 🔢",
+            text="""╔═══════════════════════╗
+║   🏁 GAME FINISHED   ║
+╚═══════════════════════╝
+
+⏳ ရလဒ်များကို တွက်ချက်နေပါသည်...
+
+🔢 AI Scoring in progress...""",
             parse_mode='Markdown'
         )
         
@@ -331,7 +385,15 @@ class GameHandler:
             await context.bot.edit_message_text(
                 chat_id=chat_id,
                 message_id=calculating_msg.message_id,
-                text="🏁 **Game ပြီးဆုံးပါပြီ!**\n\n📊 **ရလဒ်များ:**",
+                text="""╔═══════════════════════╗
+║   🏁 GAME FINISHED   ║
+╚═══════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━
+📊 **FINAL RESULTS**
+━━━━━━━━━━━━━━━━━━━━━━
+
+↓ ရလဒ်များကို အောက်တွင် ကြည့်ပါ""",
                 parse_mode='Markdown'
             )
             logger.debug(f"Edited calculating message to show results header")

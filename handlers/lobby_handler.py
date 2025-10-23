@@ -24,18 +24,25 @@ class LobbyHandler:
         count = len(players)
         
         message_lines = [
-            "🎮 Game Lobby",
-            f"Players: {count}/{self.lobby_size}",
-            "━━━━━━━━━━"
+            "╔═══════════════════════╗",
+            "║    🎮 GAME LOBBY    ║",
+            "╚═══════════════════════╝",
+            "",
+            f"👥 Players: {count}/{self.lobby_size}",
+            ""
         ]
         
         if players:
+            message_lines.append("━━━━━━━━━━━━━━━━━━━━━━")
             message_lines.append(format_player_list(players))
+            message_lines.append("━━━━━━━━━━━━━━━━━━━━━━")
         else:
-            message_lines.append("No players yet. Join now!")
+            message_lines.append("━━━━━━━━━━━━━━━━━━━━━━")
+            message_lines.append("⚠️ No players yet")
+            message_lines.append("━━━━━━━━━━━━━━━━━━━━━━")
         
         message_lines.append("")
-        message_lines.append("Click Join to enter the game!")
+        message_lines.append("👇 Click button to join!")
         
         return "\n".join(message_lines)
     
@@ -131,7 +138,15 @@ class LobbyHandler:
     async def announce_game_start(self, context: ContextTypes.DEFAULT_TYPE, 
                                  chat_id: int, message_id: int):
         """Announce that game is starting"""
-        message = "🎮 Game Starting!\n\nPlayer အရေအတွက် ပြည့်ပါပြီ။ Team များ ခွဲခြားနေပါသည်... ⏳"
+        message = """╔═══════════════════════╗
+║   🎮 GAME STARTING   ║
+╚═══════════════════════╝
+
+✅ Player အရေအတွက် ပြည့်ပါပြီ
+
+⏳ Team များ ခွဲခြားနေပါသည်...
+
+Please wait..."""
         
         try:
             await context.bot.edit_message_text(
