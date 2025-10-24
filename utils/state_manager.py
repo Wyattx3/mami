@@ -3,6 +3,7 @@ State Management System
 Persistent state management with database backend
 """
 import logging
+import json
 from enum import Enum
 from typing import Optional, Dict, Any
 from database.db_manager import db_manager
@@ -63,11 +64,11 @@ class StateManager:
                     await conn.execute(
                         """
                         UPDATE game_states 
-                        SET state = $1, metadata = $2, updated_at = NOW()
+                        SET state = $1, metadata = $2::jsonb, updated_at = NOW()
                         WHERE chat_id = $3
                         """,
                         state.value,
-                        metadata or {},
+                        json.dumps(metadata or {}),
                         chat_id
                     )
                 else:
@@ -75,11 +76,11 @@ class StateManager:
                     await conn.execute(
                         """
                         INSERT INTO game_states (chat_id, state, metadata, updated_at)
-                        VALUES ($1, $2, $3, NOW())
+                        VALUES ($1, $2, $3::jsonb, NOW())
                         """,
                         chat_id,
                         state.value,
-                        metadata or {}
+                        json.dumps(metadata or {})
                     )
                 
                 self.logger.info(f"Game state set: chat_id={chat_id}, state={state.value}")
@@ -108,9 +109,13 @@ class StateManager:
                 )
                 
                 if result:
+                    # Parse JSON string back to dict
+                    metadata = result['metadata']
+                    if isinstance(metadata, str):
+                        metadata = json.loads(metadata)
                     return {
                         'state': GameState(result['state']),
-                        'metadata': result['metadata'] or {}
+                        'metadata': metadata or {}
                     }
                 
                 # Default state if not found
@@ -151,11 +156,11 @@ class StateManager:
                     await conn.execute(
                         """
                         UPDATE user_states 
-                        SET state = $1, metadata = $2, updated_at = NOW()
+                        SET state = $1, metadata = $2::jsonb, updated_at = NOW()
                         WHERE user_id = $3 AND chat_id = $4
                         """,
                         state.value,
-                        metadata or {},
+                        json.dumps(metadata or {}),
                         user_id,
                         chat_id
                     )
@@ -164,12 +169,12 @@ class StateManager:
                     await conn.execute(
                         """
                         INSERT INTO user_states (user_id, chat_id, state, metadata, updated_at)
-                        VALUES ($1, $2, $3, $4, NOW())
+                        VALUES ($1, $2, $3, $4::jsonb, NOW())
                         """,
                         user_id,
                         chat_id,
                         state.value,
-                        metadata or {}
+                        json.dumps(metadata or {})
                     )
                 
                 self.logger.debug(f"User state set: user_id={user_id}, chat_id={chat_id}, state={state.value}")
@@ -198,9 +203,13 @@ class StateManager:
                 )
                 
                 if result:
+                    # Parse JSON string back to dict
+                    metadata = result['metadata']
+                    if isinstance(metadata, str):
+                        metadata = json.loads(metadata)
                     return {
                         'state': UserState(result['state']),
-                        'metadata': result['metadata'] or {}
+                        'metadata': metadata or {}
                     }
                 
                 # Default state if not found
