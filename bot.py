@@ -182,7 +182,7 @@ async def newgame_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     # Group chat - Continue with normal game creation
-    logger.info(f"New game created in group: {update.message.chat.title}")
+    logger.info(f"New game attempt in group: {update.message.chat.title}")
     
     # Check if channel already has an active game
     chat_id = update.message.chat_id
@@ -195,6 +195,20 @@ async def newgame_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode='Markdown'
         )
         return
+    
+    # Check if lobby is already open (players waiting to join)
+    lobby_count = await db_manager.get_lobby_count()
+    if lobby_count > 0:
+        logger.warning(f"Channel {chat_id} already has an active lobby with {lobby_count} players")
+        await update.message.reply_text(
+            f"⚠️ **Lobby တစ်ခု ဖွင့်ထားပြီးသားပါ!**\n\n"
+            f"လက်ရှိ players: {lobby_count}\n\n"
+            f"အဲဒီ lobby မှာ join လုပ်ပါ သို့မဟုတ် lobby ပိတ်သွားသည့်အထိ စောင့်ပါ။",
+            parse_mode='Markdown'
+        )
+        return
+    
+    logger.info(f"New game created in group: {update.message.chat.title}")
     
     # Check if enough characters
     char_count = await db_manager.get_character_count()
@@ -1107,6 +1121,17 @@ async def start_newgame_callback_handler(update: Update, context: ContextTypes.D
             "⚠️ **ဒီ group မှာ game တခု ပွဲစနေပါပြီ!**\n\n"
             "Game တပွဲပြီးမှ နောက်တပွဲ စနိုင်ပါမယ်။",
             parse_mode='Markdown'
+        )
+        return
+    
+    # Check if lobby is already open
+    lobby_count = await db_manager.get_lobby_count()
+    if lobby_count > 0:
+        logger.warning(f"Channel {chat_id} already has an active lobby with {lobby_count} players")
+        await query.answer(
+            f"⚠️ Lobby တစ်ခု ဖွင့်ထားပြီးသားပါ! ({lobby_count} players)\n\n"
+            f"အဲဒီ lobby မှာ join လုပ်ပါ။",
+            show_alert=True
         )
         return
     
