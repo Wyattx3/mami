@@ -430,35 +430,35 @@ class VotingHandler:
                 if selected_char_id:
                     character = await db_manager.get_character(selected_char_id)
                     confirmation_msg = (
-                        f"✅ **{team_name} - Round {round_number} ရလဒ်**\n\n"
-                        f"📊 **{role_name}** အတွက်:\n"
-                        f"➡️ **{character.name}** ကို ရွေးချယ်ပြီးပါပြီ!\n\n"
+                        f"✅ {team_name} - Round {round_number} ရလဒ်\n\n"
+                        f"📊 {role_name} အတွက်:\n"
+                        f"➡️ {character.name} ကို ရွေးချယ်ပြီးပါပြီ!\n\n"
                     )
                     
                     # Show voting summary
                     if votes:
-                        confirmation_msg += "🗳️ **Voting Summary:**\n"
+                        confirmation_msg += "🗳️ Voting Summary:\n"
                         for voter_id, char_id in votes.items():
                             voter_player = next((p for p in team_players if p['user_id'] == voter_id), None)
                             if voter_player:
                                 voter_name = voter_player.get('username', 'Unknown')
                                 voted_char = await db_manager.get_character(char_id)
-                                confirmation_msg += f"• @{voter_name} → {voted_char.name}\n"
+                                leader_mark = " 👑" if voter_player.get('is_leader') else ""
+                                confirmation_msg += f"• {voter_name}{leader_mark} → {voted_char.name}\n"
                 else:
                     confirmation_msg = (
-                        f"⚠️ **{team_name} - Round {round_number} ရလဒ်**\n\n"
-                        f"**{role_name}** အတွက်: Optional\n"
+                        f"⚠️ {team_name} - Round {round_number} ရလဒ်\n\n"
+                        f"{role_name} အတွက်: Optional\n"
                         f"(Team က vote မပေးခဲ့ပါ)"
                     )
                 
-                # Send confirmation to all team members
+                # Send confirmation to all team members (without Markdown to avoid parsing errors)
                 for player in team_players:
                     user_id = player.get('user_id')
                     try:
                         await context.bot.send_message(
                             chat_id=user_id,
-                            text=confirmation_msg,
-                            parse_mode='Markdown'
+                            text=confirmation_msg
                         )
                         logger.debug(f"Sent selection confirmation to user {user_id}")
                     except Exception as e:

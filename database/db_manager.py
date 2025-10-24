@@ -408,6 +408,18 @@ class DatabaseManager:
             )
         logger.info(f"Round selection saved - Game: {game_id}, Round: {round_number}, Team: {team_id}")
     
+    async def get_round_votes(self, game_id: int, round_number: int, team_id: int) -> Optional[Dict[int, int]]:
+        """Get individual votes for a round (user_id -> character_id)"""
+        async with self.pool.acquire() as conn:
+            votes_json = await conn.fetchval(
+                '''SELECT votes FROM game_rounds 
+                   WHERE game_id = $1 AND round_number = $2 AND team_id = $3''',
+                game_id, round_number, team_id
+            )
+            if votes_json:
+                return json.loads(votes_json)
+            return None
+    
     async def save_round_score(self, game_id: int, round_number: int, 
                                team_id: int, score: int, explanation: str):
         """Save round score and explanation"""

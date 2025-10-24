@@ -237,7 +237,7 @@ class GameHandler:
                                     selections: Dict[int, int], 
                                     teams: Dict[int, List[Dict[str, Any]]],
                                     game_id: int):
-        """Announce round results by editing the round message"""
+        """Announce round results by editing the round message with individual votes"""
         # Get role info from theme
         theme = self.game_themes.get(game_id)
         if not theme:
@@ -249,43 +249,57 @@ class GameHandler:
         role_name = role_info.get('name', 'Unknown')
         
         lines = [
-            f"✅ **ROUND {round_number}/5 COMPLETED**",
+            f"✅ ROUND {round_number}/5 COMPLETED",
             "",
-            f"👑 Role: **{role_name}**",
+            f"👑 Role: {role_name}",
             "",
             "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬",
-            "📊 **Team Selections:**",
+            "📊 Team Selections:",
             ""
         ]
         
         for team_id in sorted(teams.keys()):
             team_name = get_team_name(teams[team_id])
             char_id = selections.get(team_id)
+            
+            # Get the final selected character
             if char_id:
                 character = await db_manager.get_character(char_id)
-                if character:
-                    lines.append(f"✓ **{team_name}**")
-                    lines.append(f"   → {character.name}")
-                else:
-                    lines.append(f"✓ **{team_name}**")
-                    lines.append(f"   → Unknown")
+                char_name = character.name if character else "Unknown"
             else:
-                lines.append(f"⚠️ **{team_name}**")
-                lines.append(f"   → No selection")
+                char_name = "No selection"
+            
+            lines.append(f"✓ {team_name}")
+            lines.append(f"   → Final: {char_name}")
+            
+            # Get individual votes
+            votes = await db_manager.get_round_votes(game_id, round_number, team_id)
+            if votes:
+                lines.append(f"   📝 Individual votes:")
+                for user_id, voted_char_id in votes.items():
+                    # Get player info
+                    player = next((p for p in teams[team_id] if p['user_id'] == int(user_id)), None)
+                    if player:
+                        username = player.get('username', f"User_{user_id}")
+                        # Get voted character
+                        voted_char = await db_manager.get_character(voted_char_id)
+                        voted_char_name = voted_char.name if voted_char else "Unknown"
+                        leader_mark = " 👑" if player.get('is_leader') else ""
+                        lines.append(f"      • {username}{leader_mark} → {voted_char_name}")
+            
             lines.append("")
         
         lines.append("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
         message = "\n".join(lines)
         
-        # Edit this round's message with results
+        # Edit this round's message with results (without Markdown to avoid parsing errors)
         game_data = self.active_games.get(game_id)
         if game_data and 'round_messages' in game_data and round_number in game_data['round_messages']:
             try:
                 await context.bot.edit_message_text(
                     chat_id=chat_id,
                     message_id=game_data['round_messages'][round_number],
-                    text=message,
-                    parse_mode='Markdown'
+                    text=message
                 )
                 logger.debug(f"Edited round {round_number} message with results")
             except Exception as e:
