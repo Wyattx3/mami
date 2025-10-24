@@ -75,7 +75,8 @@ class DatabaseManager:
                     winner_team INTEGER,
                     current_round INTEGER DEFAULT 0,
                     lobby_message_id BIGINT,
-                    lobby_chat_id BIGINT
+                    lobby_chat_id BIGINT,
+                    theme_id INTEGER DEFAULT 1
                 )
             ''')
             
@@ -277,14 +278,14 @@ class DatabaseManager:
     
     # ==================== Game Operations ====================
     
-    async def create_game(self, lobby_message_id: int = None, lobby_chat_id: int = None) -> int:
-        """Create a new game"""
-        logger.info("Creating new game...")
+    async def create_game(self, lobby_message_id: int = None, lobby_chat_id: int = None, theme_id: int = 1) -> int:
+        """Create a new game with theme"""
+        logger.info(f"Creating new game with theme {theme_id}...")
         async with self.pool.acquire() as conn:
             game_id = await conn.fetchval(
-                '''INSERT INTO games (status, created_at, lobby_message_id, lobby_chat_id)
-                   VALUES ($1, $2, $3, $4) RETURNING id''',
-                'lobby', datetime.now(), lobby_message_id, lobby_chat_id
+                '''INSERT INTO games (status, created_at, lobby_message_id, lobby_chat_id, theme_id)
+                   VALUES ($1, $2, $3, $4, $5) RETURNING id''',
+                'lobby', datetime.now(), lobby_message_id, lobby_chat_id, theme_id
             )
             return game_id
     
@@ -317,6 +318,15 @@ class DatabaseManager:
                 'UPDATE games SET current_round = $1 WHERE id = $2',
                 round_number, game_id
             )
+    
+    async def get_game_theme(self, game_id: int) -> int:
+        """Get theme ID for a game"""
+        async with self.pool.acquire() as conn:
+            theme_id = await conn.fetchval(
+                'SELECT theme_id FROM games WHERE id = $1',
+                game_id
+            )
+            return theme_id if theme_id else 1
     
     async def set_game_winner(self, game_id: int, team_number: int):
         """Set game winner"""

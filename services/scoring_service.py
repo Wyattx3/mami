@@ -4,8 +4,8 @@ Scoring service for game results
 from typing import Dict, List, Any, Tuple
 import logging
 from database.db_manager import db_manager
-from utils.constants import ROLES
 from utils.helpers import get_team_name
+from data.themes import get_theme_by_id
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -208,7 +208,10 @@ class ScoringService:
                     character = await db_manager.get_character(game_round.selected_character_id)
                     
                     if character:
-                        role_info = ROLES.get(game_round.round_number, {})
+                        # Get role info from theme
+                        theme_id = await db_manager.get_game_theme(game_id)
+                        theme = get_theme_by_id(theme_id)
+                        role_info = theme['roles'].get(game_round.round_number, {})
                         role_name = role_info.get('name', '')
                         
                         # Calculate score using pre-defined system

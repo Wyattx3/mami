@@ -10,9 +10,10 @@ from database.db_manager import db_manager
 from services.team_service import team_service
 from services.scoring_service import scoring_service
 from handlers.voting_handler import voting_handler
-from utils.constants import ROLES, GAME_STATUS
+from utils.constants import GAME_STATUS
 from utils.helpers import get_team_name
 from utils.message_delivery import message_delivery
+from data.themes import get_random_theme, get_theme_by_id
 import config
 
 # Setup logger
@@ -30,6 +31,8 @@ class GameHandler:
         self.active_games: Dict[int, Dict[str, Any]] = {}
         # Store player team info for chat: {user_id: {'game_id': ..., 'team_id': ..., 'team_players': [...]}}
         self.player_teams: Dict[int, Dict[str, Any]] = {}
+        # Store game themes: {game_id: theme_dict}
+        self.game_themes: Dict[int, Dict[str, Any]] = {}
     
     async def start_game(self, context: ContextTypes.DEFAULT_TYPE, 
                         lobby_chat_id: int, lobby_message_id: int) -> int:
@@ -48,9 +51,16 @@ class GameHandler:
             logger.warning(f"Not enough players to start game: {len(players)}/{config.LOBBY_SIZE}")
             return None
         
-        # Create game
-        game_id = await db_manager.create_game(lobby_message_id, lobby_chat_id)
+        # Select random theme
+        theme = get_random_theme()
+        logger.info(f"Selected theme: {theme['emoji']} {theme['name']} (ID: {theme['id']})")
+        
+        # Create game with theme
+        game_id = await db_manager.create_game(lobby_message_id, lobby_chat_id, theme['id'])
         logger.info(f"Game created with ID: {game_id}")
+        
+        # Store theme in memory
+        self.game_themes[game_id] = theme
         
         # Form teams
         teams = team_service.form_teams(players)
@@ -87,11 +97,13 @@ class GameHandler:
         
         logger.debug(f"Stored team info for {len(self.player_teams)} players")
         
-        # Announce teams (no parse_mode to avoid underscore issues in usernames)
+        # Announce teams with theme (no parse_mode to avoid underscore issues in usernames)
         team_announcement = team_service.get_team_announcement_message(teams)
+        # Add theme info at the beginning
+        theme_announcement = f"{theme['emoji']} Theme: {theme['name']}\n\n{team_announcement}"
         msg = await context.bot.send_message(
             chat_id=lobby_chat_id,
-            text=team_announcement
+            text=theme_announcement
         )
         self.active_games[game_id]['team_announcement_message_id'] = msg.message_id
         logger.debug(f"Team announcement message ID: {msg.message_id}")
@@ -136,8 +148,15 @@ class GameHandler:
         # Update game round
         await db_manager.update_game_round(game_id, round_number)
         
-        # Get role info
-        role_info = ROLES.get(round_number, {})
+        # Get role info from theme
+        theme = self.game_themes.get(game_id)
+        if not theme:
+            # Fallback: load from database if not in memory
+            theme_id = await db_manager.get_game_theme(game_id)
+            theme = get_theme_by_id(theme_id)
+            self.game_themes[game_id] = theme
+        
+        role_info = theme['roles'].get(round_number, {})
         role_name = role_info.get('name', 'Unknown')
         
         # Announce round start with "Go to Bot" button
@@ -219,7 +238,14 @@ class GameHandler:
                                     teams: Dict[int, List[Dict[str, Any]]],
                                     game_id: int):
         """Announce round results by editing the round message"""
-        role_info = ROLES.get(round_number, {})
+        # Get role info from theme
+        theme = self.game_themes.get(game_id)
+        if not theme:
+            theme_id = await db_manager.get_game_theme(game_id)
+            theme = get_theme_by_id(theme_id)
+            self.game_themes[game_id] = theme
+        
+        role_info = theme['roles'].get(round_number, {})
         role_name = role_info.get('name', 'Unknown')
         
         lines = [

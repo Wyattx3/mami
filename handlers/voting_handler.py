@@ -10,9 +10,9 @@ from datetime import datetime
 from database.db_manager import db_manager
 from services.ai_service import ai_service
 from models.character import Character
-from utils.constants import ROLES
 from utils.helpers import parse_vote_callback, get_team_name
 from utils.message_delivery import message_delivery
+from data.themes import get_theme_by_id
 import config
 
 # Setup logger
@@ -124,8 +124,10 @@ class VotingHandler:
             self.active_votes[game_id][round_number][team_id] = {}
             self.voting_messages[game_id][round_number][team_id] = {}
         
-        # Get role info
-        role_info = ROLES.get(round_number, {})
+        # Get role info from theme
+        theme_id = await db_manager.get_game_theme(game_id)
+        theme = get_theme_by_id(theme_id)
+        role_info = theme['roles'].get(round_number, {})
         role_name = role_info.get('name', 'Unknown')
         role_description = role_info.get('description', '')
         
@@ -225,8 +227,10 @@ class VotingHandler:
         # Update message to show vote recorded
         try:
             character = await db_manager.get_character(character_id)
-            # Get role name for this round
-            role_info = ROLES.get(round_number, {})
+            # Get role name for this round from theme
+            theme_id = await db_manager.get_game_theme(game_id)
+            theme = get_theme_by_id(theme_id)
+            role_info = theme['roles'].get(round_number, {})
             role_name = role_info.get('name', 'Unknown')
             
             await query.edit_message_text(
@@ -340,7 +344,10 @@ class VotingHandler:
         logger.info(f"Finalizing voting - Game: {game_id}, Round: {round_number}")
         selections = {}
         
-        role_info = ROLES.get(round_number, {})
+        # Get role info from theme
+        theme_id = await db_manager.get_game_theme(game_id)
+        theme = get_theme_by_id(theme_id)
+        role_info = theme['roles'].get(round_number, {})
         role_name = role_info.get('name', 'Unknown')
         
         for team_id, team_players in teams.items():
