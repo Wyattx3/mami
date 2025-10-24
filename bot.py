@@ -1251,8 +1251,8 @@ async def team_chat_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     team_id = team_info['team_id']
     team_name = get_team_name(team_players)
     
-    # Format message with sender info
-    formatted_message = f"💬 **{team_name}** - by @{username}\n\n{message_text}"
+    # Format message with sender info (no Markdown to avoid parsing errors)
+    formatted_message = f"💬 {team_name} - by {username}\n\n{message_text}"
     
     # Send to all team members except sender
     sent_count = 0
@@ -1262,8 +1262,7 @@ async def team_chat_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             try:
                 await context.bot.send_message(
                     chat_id=recipient_id,
-                    text=formatted_message,
-                    parse_mode='Markdown'
+                    text=formatted_message
                 )
                 sent_count += 1
             except Exception as e:

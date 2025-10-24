@@ -275,8 +275,35 @@ Game ကို စတင်၍ မရပါ။ နောက်တစ်ကြိ
         
         logger.info(f"Player joined lobby: {username}")
         
+        # Small delay to avoid rate limiting when multiple joins happen quickly
+        await asyncio.sleep(0.3)
+        
+        # Test if bot can send private messages to user
+        try:
+            test_message = await context.bot.send_message(
+                chat_id=user_id,
+                text="✅ သင် lobby သို့ အောင်မြင်စွာ ဝင်ရောက်ပြီးပါပြီ!\n\n"
+                     "Game စတင်ပြီး voting messages များကို ဒီမှာ ရရှိမှာပါ။"
+            )
+            logger.debug(f"Private message test successful for user {user_id}")
+        except Exception as e:
+            # Can't send private message - remove from lobby
+            logger.warning(f"Cannot send private message to user {user_id}: {e}")
+            await db_manager.remove_from_lobby(user_id)
+            
+            await query.answer(
+                "⚠️ Bot ကို အရင် စတင်ပေးရပါမယ်!\n\n"
+                "1️⃣ Bot ကို private chat မှာ /start နှိပ်ပါ\n"
+                "2️⃣ ပြီးရင် ပြန်လာပြီး Join နှိပ်ပါ",
+                show_alert=True
+            )
+            return False
+        
+        # Get current count after successful join
+        new_count = await db_manager.get_lobby_count()
+        
         # Start timer if this is the first player
-        if count == 0:
+        if new_count == 1:
             self.lobby_chat_id = query.message.chat_id
             self.lobby_message_id = query.message.message_id
             await self.start_lobby_timer(context)
@@ -290,7 +317,6 @@ Game ကို စတင်၍ မရပါ။ နောက်တစ်ကြိ
         )
         
         # Check if we reached max players (immediate start)
-        new_count = count + 1
         if new_count >= self.max_players:
             logger.info(f"Max players reached ({new_count}/{self.max_players})! Starting game immediately")
             self.cancel_lobby_timer()

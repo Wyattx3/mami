@@ -184,8 +184,12 @@ class VotingHandler:
         keyboard = self.create_voting_keyboard(game_id, round_number, team_id, characters)
         
         # Send to each player with personalized message (with retry logic)
-        for player in team_players:
+        for i, player in enumerate(team_players):
             user_id = player['user_id']
+            
+            # Add small delay between messages to avoid rate limiting (except first message)
+            if i > 0:
+                await asyncio.sleep(0.5)  # 500ms delay between messages
             
             # Create personalized message for this player
             message_text = await self.create_voting_message(
