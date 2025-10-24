@@ -21,6 +21,13 @@ import config
 from utils.logger_config import init_logging
 init_logging(level=config.LOG_LEVEL, enable_console=config.ENABLE_CONSOLE_LOGS)
 
+# Reduce noise from third-party libraries in production
+if config.LOG_LEVEL in ['WARNING', 'ERROR', 'CRITICAL']:
+    logging.getLogger('telegram').setLevel(logging.ERROR)
+    logging.getLogger('telegram.ext').setLevel(logging.ERROR)
+    logging.getLogger('httpx').setLevel(logging.ERROR)
+    logging.getLogger('asyncio').setLevel(logging.ERROR)
+
 # Keep alive for Replit (prevents sleeping on free tier)
 if os.getenv('REPLIT_DEPLOYMENT'):
     try:

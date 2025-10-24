@@ -30,6 +30,7 @@ database/*.db
 # Logs
 *.log
 bot_output.log
+logs/
 
 # OS
 .DS_Store
