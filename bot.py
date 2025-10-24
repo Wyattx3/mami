@@ -1183,6 +1183,45 @@ Waiting for players to join...
     context.user_data['lobby_chat_id'] = query.message.chat_id
 
 
+# ==================== Group Message Filter ====================
+
+async def group_message_filter(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Delete user messages in group during active game/lobby"""
+    # Only handle group chat messages
+    if not update.message or not update.message.chat:
+        return
+    
+    from telegram.constants import ChatType
+    if update.message.chat.type == ChatType.PRIVATE:
+        return
+    
+    chat_id = update.message.chat.id
+    user_id = update.effective_user.id
+    
+    # Don't delete bot's own messages
+    if update.message.from_user.is_bot:
+        return
+    
+    # Check if there's an active game in this chat
+    has_active_game = False
+    for game_id, game_data in game_handler.active_games.items():
+        if game_data['chat_id'] == chat_id:
+            has_active_game = True
+            break
+    
+    # Check if there's an active lobby
+    lobby_count = await db_manager.get_lobby_count()
+    has_active_lobby = lobby_count > 0
+    
+    # If game or lobby is active, delete user messages
+    if has_active_game or has_active_lobby:
+        try:
+            await update.message.delete()
+            logger.debug(f"Deleted message from user {user_id} in chat {chat_id} (game/lobby active)")
+        except Exception as e:
+            logger.warning(f"Failed to delete message: {e}")
+
+
 # ==================== Team Chat Handler ====================
 
 async def team_chat_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1329,6 +1368,12 @@ def main():
     app.add_handler(CallbackQueryHandler(back_callback_handler, pattern="^back_"))
     app.add_handler(CallbackQueryHandler(help_callback_handler, pattern="^(show_help|help_.*)$"))
     app.add_handler(CallbackQueryHandler(start_newgame_callback_handler, pattern="^start_newgame$"))
+    
+    # Group message filter (delete user messages during game/lobby)
+    app.add_handler(MessageHandler(
+        filters.TEXT & filters.ChatType.GROUPS & ~filters.COMMAND, 
+        group_message_filter
+    ))
     
     # Team chat handler (should be last to not interfere with commands)
     app.add_handler(MessageHandler(filters.TEXT & filters.ChatType.PRIVATE & ~filters.COMMAND, team_chat_handler))
