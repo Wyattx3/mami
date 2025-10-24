@@ -6,72 +6,10 @@ import logging
 from database.db_manager import db_manager
 from utils.helpers import get_team_name
 from data.themes import get_theme_by_id
+from data.full_scores import MBTI_SCORES, ZODIAC_SCORES
 
 # Setup logger
 logger = logging.getLogger(__name__)
-
-# Pre-defined MBTI scores for each role (1-10)
-MBTI_SCORES = {
-    'ဘုရင်': {  # Leader
-        'ENTJ': 10, 'ESTJ': 10, 'ENFJ': 9, 'ENTP': 8,
-        'ESFJ': 7, 'ESTP': 7, 'INTJ': 6, 'ISTJ': 6,
-        'INTP': 5, 'INFJ': 5, 'ISTP': 4, 'ISFJ': 4,
-        'ENFP': 3, 'ESFP': 3, 'INFP': 2, 'ISFP': 2
-    },
-    'စစ်သူကြီး': {  # Brave/Warrior
-        'ESTP': 10, 'ENTP': 9, 'ISTP': 9, 'ENTJ': 8,
-        'ESTJ': 8, 'INTP': 7, 'ESFP': 7, 'ENFP': 6,
-        'INTJ': 5, 'ENFJ': 5, 'ISTJ': 4, 'ESFJ': 4,
-        'INFJ': 3, 'ISFP': 3, 'INFP': 2, 'ISFJ': 2
-    },
-    'အကြံပေး': {  # Wise/Advisor
-        'INTJ': 10, 'INTP': 10, 'INFJ': 9, 'ENTJ': 8,
-        'ENTP': 8, 'ESTJ': 10, 'ISTJ': 7, 'INFP': 7,
-        'ENFJ': 6, 'ISTP': 5, 'ENFP': 5, 'ISFJ': 4,
-        'ESFJ': 3, 'ISFP': 3, 'ESTP': 2, 'ESFP': 2
-    },
-    'လယ်သမား': {  # Business-minded/Farmer
-        'ESTJ': 10, 'ENTJ': 10, 'ISTJ': 9, 'ESTP': 8,
-        'ISTP': 8, 'INTJ': 7, 'ESFJ': 7, 'ENTP': 6,
-        'INTP': 5, 'ENFJ': 5, 'ISFJ': 4, 'ESFP': 4,
-        'ENFP': 3, 'INFJ': 3, 'INFP': 2, 'ISFP': 2
-    },
-    'ဘုန်းကြီး': {  # Polite/Diplomatic/Monk
-        'ENFJ': 10, 'INFJ': 10, 'ESFJ': 9, 'ENFP': 8,
-        'ISFJ': 8, 'INFP': 7, 'ENTJ': 6, 'INTJ': 6,
-        'ENTP': 5, 'INTP': 5, 'ESFP': 4, 'ISFP': 4,
-        'ESTJ': 3, 'ISTJ': 3, 'ESTP': 2, 'ISTP': 2
-    }
-}
-
-# Pre-defined Zodiac scores for each role (1-10)
-ZODIAC_SCORES = {
-    'ဘုရင်': {  # Leader
-        'Leo': 10, 'Aries': 10, 'Capricorn': 9, 'Scorpio': 8,
-        'Sagittarius': 7, 'Aquarius': 7, 'Gemini': 6, 'Taurus': 6,
-        'Virgo': 5, 'Libra': 5, 'Cancer': 3, 'Pisces': 2
-    },
-    'စစ်သူကြီး': {  # Brave/Warrior
-        'Aries': 10, 'Scorpio': 10, 'Leo': 9, 'Sagittarius': 8,
-        'Capricorn': 7, 'Gemini': 7, 'Aquarius': 6, 'Taurus': 6,
-        'Virgo': 5, 'Cancer': 4, 'Libra': 3, 'Pisces': 2
-    },
-    'အကြံပေး': {  # Wise/Advisor
-        'Virgo': 10, 'Aquarius': 10, 'Capricorn': 9, 'Scorpio': 8,
-        'Gemini': 8, 'Libra': 7, 'Pisces': 7, 'Cancer': 6,
-        'Taurus': 5, 'Leo': 4, 'Sagittarius': 3, 'Aries': 2
-    },
-    'လယ်သမား': {  # Business-minded/Farmer
-        'Capricorn': 10, 'Taurus': 10, 'Virgo': 9, 'Scorpio': 8,
-        'Leo': 7, 'Aries': 7, 'Gemini': 6, 'Aquarius': 6,
-        'Sagittarius': 5, 'Cancer': 4, 'Libra': 3, 'Pisces': 2
-    },
-    'ဘုန်းကြီး': {  # Polite/Diplomatic/Monk
-        'Libra': 10, 'Pisces': 10, 'Cancer': 9, 'Taurus': 8,
-        'Virgo': 7, 'Aquarius': 7, 'Gemini': 6, 'Capricorn': 6,
-        'Sagittarius': 5, 'Scorpio': 4, 'Leo': 3, 'Aries': 2
-    }
-}
 
 
 class ScoringService:
