@@ -17,6 +17,10 @@ from telegram.ext import (
 
 import config
 
+# Initialize structured logging first
+from utils.logger_config import init_logging
+init_logging(level=config.LOG_LEVEL, enable_console=config.ENABLE_CONSOLE_LOGS)
+
 # Keep alive for Replit (prevents sleeping on free tier)
 if os.getenv('REPLIT_DEPLOYMENT'):
     try:
@@ -25,6 +29,7 @@ if os.getenv('REPLIT_DEPLOYMENT'):
         logging.info("Keep alive server started for Replit")
     except ImportError:
         logging.warning("Keep alive module not found, skipping")
+
 from database.db_manager import db_manager
 from handlers.lobby_handler import lobby_handler
 from handlers.game_handler import game_handler
@@ -1198,6 +1203,11 @@ async def post_init(app: Application) -> None:
     logger.info("Database connection pool created")
     await db_manager.init_database()
     logger.info("Database initialized")
+    
+    # Initialize state management tables
+    from utils.state_manager import state_manager
+    await state_manager.init_state_tables()
+    logger.info("State management initialized")
 
 
 def main():
@@ -1250,12 +1260,27 @@ def main():
         logger.info(f"Webhook URL: {config.WEBHOOK_URL}{config.WEBHOOK_PATH}")
         logger.info("=" * 50)
         
+        # Create custom webserver with health check endpoint
+        from tornado.web import Application as TornadoApplication, RequestHandler
+        
+        class HealthCheckHandler(RequestHandler):
+            def get(self):
+                self.set_header('Content-Type', 'application/json')
+                self.write({'status': 'ok', 'bot': 'running'})
+        
+        # Create Tornado application with health check endpoint
+        tornado_app = TornadoApplication([
+            (r'/', HealthCheckHandler),
+            (r'/health', HealthCheckHandler),
+        ])
+        
         app.run_webhook(
             listen="0.0.0.0",
             port=config.PORT,
             url_path=config.WEBHOOK_PATH,
             webhook_url=f"{config.WEBHOOK_URL}{config.WEBHOOK_PATH}",
-            allowed_updates=Update.ALL_TYPES
+            allowed_updates=Update.ALL_TYPES,
+            webhook_server=tornado_app
         )
     else:
         # Polling mode (Local/Development)

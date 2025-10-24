@@ -38,6 +38,11 @@ WEBHOOK_PATH = os.getenv('WEBHOOK_PATH', '/webhook')  # Webhook endpoint path
 PORT = int(os.getenv('PORT', 8080))  # Port for webhook server
 USE_WEBHOOK = bool(WEBHOOK_URL)  # Auto-detect webhook mode
 
+# Logging Configuration
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_DIR = os.getenv('LOG_DIR', 'logs')
+ENABLE_CONSOLE_LOGS = os.getenv('ENABLE_CONSOLE_LOGS', 'true').lower() == 'true'
+
 # Game Status Constants
 GAME_STATUS = {
     'LOBBY': 'lobby',
