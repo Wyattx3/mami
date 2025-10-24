@@ -165,8 +165,8 @@ class VotingHandler:
                               game_id: int, round_number: int, team_id: int,
                               team_players: List[Dict[str, Any]], 
                               characters: List[Character]):
-        """Send voting message to all players in a team"""
-        logger.info(f"Sending voting to team {team_id} - Game: {game_id}, Round: {round_number}")
+        """Send voting message to all players in a team (PARALLEL for scalability)"""
+        logger.info(f"Sending voting to team {team_id} ({len(team_players)} players) - Game: {game_id}, Round: {round_number}")
         self.init_round_voting(game_id, round_number)
         
         if team_id not in self.active_votes[game_id][round_number]:
@@ -183,25 +183,10 @@ class VotingHandler:
         # Create keyboard (same for all)
         keyboard = self.create_voting_keyboard(game_id, round_number, team_id, characters)
         
-        # Calculate adaptive delay based on team size
-        # More players = longer delay to avoid rate limits
-        team_size = len(team_players)
-        if team_size <= 3:
-            base_delay = 0.8  # 800ms for small teams
-        elif team_size <= 4:
-            base_delay = 1.0  # 1 second for medium teams
-        else:
-            base_delay = 1.2  # 1.2 seconds for large teams
-        
-        logger.debug(f"Team {team_id} has {team_size} players, using {base_delay}s delay between messages")
-        
-        # Send to each player with personalized message (with retry logic)
-        for i, player in enumerate(team_players):
+        # Prepare recipients for parallel sending
+        recipients = []
+        for player in team_players:
             user_id = player['user_id']
-            
-            # Add adaptive delay between messages (except first message)
-            if i > 0:
-                await asyncio.sleep(base_delay)
             
             # Create personalized message for this player
             message_text = await self.create_voting_message(
@@ -209,20 +194,36 @@ class VotingHandler:
                 team_id, team_players, user_id
             )
             
-            # Send with retry logic for reliable delivery
-            msg = await message_delivery.send_message_with_retry(
-                context.bot,
-                chat_id=user_id,
-                text=message_text,
-                reply_markup=keyboard,
-                parse_mode='Markdown'
-            )
+            recipients.append({
+                'chat_id': user_id,
+                'text': message_text,
+                'player': player  # Store for later reference
+            })
+        
+        # Send all messages in parallel with rate limiting
+        # This is FAST and SCALABLE - works for 3 or 1000 players!
+        results = await message_delivery.send_parallel(
+            context.bot,
+            recipients,
+            reply_markup=keyboard,
+            parse_mode='Markdown'
+        )
+        
+        # Store message IDs and log results
+        success_count = 0
+        for recipient in recipients:
+            user_id = recipient['chat_id']
+            msg = results.get(user_id)
             
             if msg:
                 self.voting_messages[game_id][round_number][team_id][user_id] = msg.message_id
-                logger.debug(f"Voting message delivered to user {user_id}")
+                success_count += 1
             else:
-                logger.error(f"Failed to deliver voting message to user {user_id} after all retries")
+                logger.warning(f"Failed to deliver voting message to user {user_id}")
+        
+        logger.info(
+            f"Team {team_id} voting sent: {success_count}/{len(team_players)} delivered"
+        )
     
     async def handle_vote(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
         """Handle a vote submission (including dice roll)

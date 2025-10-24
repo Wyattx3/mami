@@ -1,24 +1,29 @@
 """
 Reliable Message Delivery System
 Prevents data loss with retry logic and delivery tracking
+Supports parallel sending with rate limiting for scalability
 """
 import asyncio
 import logging
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Callable, Coroutine
 from datetime import datetime
-from telegram import Bot
+from telegram import Bot, Message
 from telegram.error import TelegramError, TimedOut, NetworkError, RetryAfter
 
 logger = logging.getLogger(__name__)
 
 
 class MessageDelivery:
-    """Handle reliable message delivery with retry logic"""
+    """Handle reliable message delivery with retry logic and parallel sending"""
     
     def __init__(self):
         self.max_retries = 3
-        self.retry_delays = [2, 5, 10]  # Exponential backoff (increased for better reliability)
+        self.retry_delays = [1, 2, 5]  # Fast retries (rate limiter handles pacing)
         self.failed_messages: List[Dict[str, Any]] = []
+        
+        # Import rate limiter here to avoid circular imports
+        from utils.rate_limiter import rate_limiter
+        self.rate_limiter = rate_limiter
     
     async def send_message_with_retry(
         self,
@@ -235,6 +240,130 @@ class MessageDelivery:
         )
         
         return {'sent': sent_count, 'failed': len(still_failed)}
+    
+    async def send_parallel(
+        self,
+        bot: Bot,
+        recipients: List[Dict[str, Any]],
+        **common_kwargs
+    ) -> Dict[int, Optional[Message]]:
+        """Send messages to multiple recipients in parallel with rate limiting
+        
+        This is the SCALABLE method used for 100s or 1000s of users.
+        Uses token bucket rate limiter to send fast while staying within limits.
+        
+        Args:
+            bot: Telegram Bot instance
+            recipients: List of dicts with 'chat_id', 'text', and optional kwargs
+            **common_kwargs: Common parameters for all messages
+            
+        Returns:
+            Dict mapping chat_id to Message (or None if failed)
+            
+        Example:
+            recipients = [
+                {'chat_id': 123, 'text': 'Hello User 1'},
+                {'chat_id': 456, 'text': 'Hello User 2'},
+                ...
+            ]
+            results = await send_parallel(bot, recipients, parse_mode='Markdown')
+        """
+        logger.info(f"Parallel send starting: {len(recipients)} recipients")
+        
+        async def send_one(recipient: Dict[str, Any]) -> tuple:
+            """Send to one recipient with rate limiting"""
+            chat_id = recipient['chat_id']
+            text = recipient.get('text')
+            
+            if not text:
+                logger.warning(f"No text for recipient {chat_id}, skipping")
+                return (chat_id, None)
+            
+            # Merge recipient-specific kwargs with common kwargs
+            kwargs = {**common_kwargs, **recipient.get('kwargs', {})}
+            
+            # Acquire rate limit token
+            await self.rate_limiter.acquire()
+            
+            # Send with retry logic
+            for attempt in range(self.max_retries):
+                try:
+                    message = await bot.send_message(
+                        chat_id=chat_id,
+                        text=text,
+                        **kwargs
+                    )
+                    
+                    if attempt > 0:
+                        logger.debug(f"Delivered to {chat_id} after {attempt + 1} attempts")
+                    
+                    return (chat_id, message)
+                    
+                except RetryAfter as e:
+                    # Rate limited - wait and retry
+                    wait_time = e.retry_after + 0.5
+                    logger.warning(f"RetryAfter for {chat_id}: waiting {wait_time}s")
+                    await asyncio.sleep(wait_time)
+                    
+                except (TimedOut, NetworkError) as e:
+                    # Transient errors - retry with backoff
+                    if attempt < self.max_retries - 1:
+                        wait_time = self.retry_delays[attempt]
+                        logger.debug(f"Retry {chat_id} in {wait_time}s: {type(e).__name__}")
+                        await asyncio.sleep(wait_time)
+                    else:
+                        logger.warning(f"Failed to send to {chat_id} after all retries: {e}")
+                        self._store_failed_message(chat_id, text, str(e), kwargs)
+                        return (chat_id, None)
+                        
+                except TelegramError as e:
+                    # Other errors (Forbidden, BadRequest, etc.)
+                    error_msg = str(e).lower()
+                    
+                    if "blocked" in error_msg or "forbidden" in error_msg:
+                        logger.debug(f"User {chat_id} blocked bot")
+                        return (chat_id, None)
+                    
+                    if attempt < self.max_retries - 1:
+                        wait_time = self.retry_delays[attempt]
+                        logger.debug(f"TelegramError for {chat_id}, retry in {wait_time}s")
+                        await asyncio.sleep(wait_time)
+                    else:
+                        logger.warning(f"Failed {chat_id}: {e}")
+                        self._store_failed_message(chat_id, text, str(e), kwargs)
+                        return (chat_id, None)
+                        
+                except Exception as e:
+                    logger.error(f"Unexpected error sending to {chat_id}: {e}", exc_info=True)
+                    self._store_failed_message(chat_id, text, f"Unexpected: {e}", kwargs)
+                    return (chat_id, None)
+            
+            return (chat_id, None)
+        
+        # Send all messages in parallel
+        tasks = [send_one(recipient) for recipient in recipients]
+        results = await asyncio.gather(*tasks, return_exceptions=False)
+        
+        # Convert to dict
+        results_dict = dict(results)
+        
+        # Log summary
+        success_count = sum(1 for msg in results_dict.values() if msg is not None)
+        failed_count = len(results_dict) - success_count
+        
+        logger.info(
+            f"Parallel send complete: {success_count}/{len(recipients)} delivered, "
+            f"{failed_count} failed"
+        )
+        
+        # Log rate limiter status
+        status = self.rate_limiter.get_status()
+        logger.debug(
+            f"Rate limiter: {status['tokens']:.1f}/{status['capacity']} tokens "
+            f"({status['percentage']:.1f}%)"
+        )
+        
+        return results_dict
 
 
 # Global message delivery instance
