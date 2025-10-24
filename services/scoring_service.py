@@ -198,7 +198,7 @@ class ScoringService:
         return winner
     
     def format_team_results(self, team_id: int, results: Dict[str, Any]) -> str:
-        """Format results for a single team
+        """Format results for a single team (for channel announcement)
         
         Args:
             team_id: Team number
@@ -210,32 +210,46 @@ class ScoringService:
         # Get team name from players
         players = results.get('players', [])
         team_name = get_team_name(players) if players else f"Team {team_id}"
+        total_score = results.get('total_score', 0)
         
-        lines = [f"🏆 **{team_name} Results**\n"]
+        lines = [
+            f"🎮 {team_name}",
+            ""
+        ]
         
-        # Players
+        # Players with leader mark
         if players:
-            player_names = ', '.join([f"@{p['username']}" for p in players])
-            lines.append(f"**Players:** {player_names}")
+            lines.append("👥 Players:")
+            for player in players:
+                username = player.get('username', 'Unknown')
+                leader_mark = " 👑" if player.get('is_leader') else ""
+                lines.append(f"   • {username}{leader_mark}")
+            lines.append("")
         
-        lines.append("━━━━━━━━━━")
+        lines.append("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
+        lines.append("📋 Round Results:")
+        lines.append("")
         
-        # Rounds
+        # Rounds with scores
         rounds = results.get('rounds', [])
-        for round_data in rounds:
-            role = round_data.get('role', '')
+        for i, round_data in enumerate(rounds, 1):
+            role = round_data.get('role', 'Unknown')
             char_name = round_data.get('character_name', 'Optional')
             score = round_data.get('score', 0)
-            lines.append(f"{role}: {char_name} ({score} မှတ်)")
+            lines.append(f"Round {i}: {role}")
+            lines.append(f"   → {char_name}")
+            lines.append(f"   → Score: {score}/10 မှတ်")
+            lines.append("")
         
-        lines.append("")
-        lines.append(f"**Total: {results.get('total_score', 0)} မှတ်**")
+        lines.append("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
+        lines.append(f"💯 TOTAL SCORE: {total_score} မှတ်")
+        lines.append("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
         
         return "\n".join(lines)
     
     def format_all_results(self, results: Dict[int, Dict[str, Any]], 
                           winner_team: int) -> List[str]:
-        """Format results for all teams
+        """Format results for all teams (for channel announcement)
         
         Args:
             results: All team results
@@ -252,7 +266,7 @@ class ScoringService:
             
             # Add winner indicator
             if team_id == winner_team:
-                message = "👑 **WINNER!** 👑\n\n" + message
+                message = "👑 WINNER! 👑\n\n" + message
             
             messages.append(message)
         

@@ -403,12 +403,11 @@ class GameHandler:
         # Announce game finished
         calculating_msg = await context.bot.send_message(
             chat_id=chat_id,
-            text="""🏁 **GAME FINISHED**
+            text="""🏁 GAME FINISHED
 
 ⏳ ရလဒ်များကို တွက်ချက်နေပါသည်...
 
-🔢 AI Scoring in progress...""",
-            parse_mode='Markdown'
+🔢 Scoring in progress..."""
         )
         
         # Wait a moment for drama
@@ -419,14 +418,13 @@ class GameHandler:
             await context.bot.edit_message_text(
                 chat_id=chat_id,
                 message_id=calculating_msg.message_id,
-                text="""🏁 **GAME FINISHED**
+                text="""🏁 GAME FINISHED
 
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-📊 **FINAL RESULTS**
+📊 FINAL RESULTS
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 
-↓ ရလဒ်များကို အောက်တွင် ကြည့်ပါ""",
-                parse_mode='Markdown'
+↓ ရလဒ်များကို အောက်တွင် ကြည့်ပါ"""
             )
             logger.debug(f"Edited calculating message to show results header")
         except Exception as e:
@@ -444,31 +442,41 @@ class GameHandler:
             await context.bot.send_message(
                 chat_id=chat_id,
                 text=message,
-                reply_markup=keyboard,
-                parse_mode='Markdown'
+                reply_markup=keyboard
             )
             await asyncio.sleep(1)
         
         # Final winner announcement
         winner_players = results[winner]['players']
         winner_team_name = get_team_name(winner_players)
-        winner_names = ', '.join([f"@{p['username']}" for p in winner_players])
         winner_score = results[winner]['total_score']
         
+        # Format winner names with leader mark
+        winner_names_list = []
+        for player in winner_players:
+            username = player.get('username', 'Unknown')
+            leader_mark = " 👑" if player.get('is_leader') else ""
+            winner_names_list.append(f"{username}{leader_mark}")
+        winner_names = ', '.join(winner_names_list)
+        
         final_message = f"""
-🎉 **အနိုင်ရရှိသူ!** 🎉
+🎉🎉🎉🎉🎉🎉🎉
+🏆 အနိုင်ရရှိသူ! 🏆
+🎉🎉🎉🎉🎉🎉🎉
 
-👑 **{winner_team_name}** 👑
+👑 {winner_team_name} 👑
+
 Players: {winner_names}
-Score: {winner_score} မှတ်
+
+💯 Final Score: {winner_score} မှတ်
 
 Congratulations! 🎊
+Game ပါဝင်ကစားပေးတဲ့အတွက် ကျေးဇူးတင်ပါတယ်! 🙏
 """
         
         await context.bot.send_message(
             chat_id=chat_id,
-            text=final_message,
-            parse_mode='Markdown'
+            text=final_message
         )
         
         # Send private results to all players
