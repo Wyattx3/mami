@@ -3,6 +3,7 @@ Lobby handler for join/quit operations
 """
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
+from telegram.error import BadRequest
 import logging
 import asyncio
 from datetime import datetime, timedelta
@@ -122,6 +123,12 @@ class LobbyHandler:
                         text=lobby_message,
                         reply_markup=self.get_lobby_keyboard()
                     )
+                except BadRequest as e:
+                    # Ignore "message not modified" errors (content unchanged)
+                    if "message is not modified" in str(e).lower():
+                        logger.debug(f"Lobby message unchanged, skipping update")
+                    else:
+                        logger.warning(f"BadRequest updating lobby timer: {e}")
                 except Exception as e:
                     logger.error(f"Error updating lobby timer: {e}")
             
@@ -275,8 +282,9 @@ Game ကို စတင်၍ မရပါ။ နောက်တစ်ကြိ
         
         logger.info(f"Player joined lobby: {username}")
         
-        # Small delay to avoid rate limiting when multiple joins happen quickly
-        await asyncio.sleep(0.3)
+        # Longer delay to avoid rate limiting when multiple joins happen quickly
+        # Especially important for 12-15 player games
+        await asyncio.sleep(0.6)
         
         # Test if bot can send private messages to user
         try:

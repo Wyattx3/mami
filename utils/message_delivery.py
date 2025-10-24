@@ -17,7 +17,7 @@ class MessageDelivery:
     
     def __init__(self):
         self.max_retries = 3
-        self.retry_delays = [1, 3, 5]  # Exponential backoff
+        self.retry_delays = [2, 5, 10]  # Exponential backoff (increased for better reliability)
         self.failed_messages: List[Dict[str, Any]] = []
     
     async def send_message_with_retry(

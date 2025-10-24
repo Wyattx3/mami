@@ -183,13 +183,25 @@ class VotingHandler:
         # Create keyboard (same for all)
         keyboard = self.create_voting_keyboard(game_id, round_number, team_id, characters)
         
+        # Calculate adaptive delay based on team size
+        # More players = longer delay to avoid rate limits
+        team_size = len(team_players)
+        if team_size <= 3:
+            base_delay = 0.8  # 800ms for small teams
+        elif team_size <= 4:
+            base_delay = 1.0  # 1 second for medium teams
+        else:
+            base_delay = 1.2  # 1.2 seconds for large teams
+        
+        logger.debug(f"Team {team_id} has {team_size} players, using {base_delay}s delay between messages")
+        
         # Send to each player with personalized message (with retry logic)
         for i, player in enumerate(team_players):
             user_id = player['user_id']
             
-            # Add small delay between messages to avoid rate limiting (except first message)
+            # Add adaptive delay between messages (except first message)
             if i > 0:
-                await asyncio.sleep(0.5)  # 500ms delay between messages
+                await asyncio.sleep(base_delay)
             
             # Create personalized message for this player
             message_text = await self.create_voting_message(

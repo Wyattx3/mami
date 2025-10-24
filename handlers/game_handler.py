@@ -195,8 +195,9 @@ class GameHandler:
         # Initialize voting for this round
         voting_handler.init_round_voting(game_id, round_number)
         
-        # Send voting to each team
-        for team_id, team_players in teams.items():
+        # Send voting to each team with rate limiting between teams
+        team_count = len(teams)
+        for idx, (team_id, team_players) in enumerate(teams.items()):
             # Get characters already used by this team
             used_character_ids = await db_manager.get_team_used_character_ids(game_id, team_id)
             
@@ -220,6 +221,19 @@ class GameHandler:
             await voting_handler.send_team_voting(
                 context, game_id, round_number, team_id, team_players, characters
             )
+            
+            # Add delay between teams to prevent rate limiting (except for last team)
+            # More teams = shorter delay per team to keep total time reasonable
+            if idx < team_count - 1:
+                if team_count <= 3:
+                    team_delay = 1.5  # 1.5s for few teams
+                elif team_count <= 4:
+                    team_delay = 1.0  # 1s for medium number
+                else:
+                    team_delay = 0.8  # 0.8s for many teams
+                
+                logger.debug(f"Waiting {team_delay}s before sending to next team...")
+                await asyncio.sleep(team_delay)
         
         # Wait for voting time
         logger.debug(f"Game {game_id} - Round {round_number} - Waiting {self.round_time} seconds for votes")
