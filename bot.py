@@ -482,17 +482,7 @@ async def char_zodiac_received(update: Update, context: ContextTypes.DEFAULT_TYP
     
     context.user_data['char_zodiac'] = zodiac
     
-    # Generate description using AI
-    await query.edit_message_text(
-        f"✅ Name: **{context.user_data['char_name']}**\n"
-        f"✅ MBTI: **{context.user_data['char_mbti']}**\n"
-        f"✅ Zodiac: **{zodiac}**\n\n"
-        f"⏳ AI က description ရေးနေပါသည်...",
-        parse_mode='Markdown'
-    )
-    
-    # Generate AI description
-    from services.ai_service import ai_service
+    # Generate description using pre-defined descriptions
     from models.character import Character
     
     temp_character = Character(
@@ -503,7 +493,9 @@ async def char_zodiac_received(update: Update, context: ContextTypes.DEFAULT_TYP
         description=""
     )
     
-    description = await ai_service.generate_character_description(temp_character)
+    # Use pre-defined descriptions from voting_handler
+    from handlers.voting_handler import get_character_description
+    description = get_character_description(temp_character)
     context.user_data['char_description'] = description
     
     # Ask for admin password
