@@ -8,14 +8,13 @@ from utils.helpers import shuffle_players, split_into_teams, format_team_announc
 
 
 class TeamService:
-    """Handles team formation and management"""
+    """Handles team formation and management with dynamic sizing"""
     
     def __init__(self):
-        self.team_size = config.TEAM_SIZE
-        self.num_teams = config.NUM_TEAMS
+        self.team_size = config.TEAM_SIZE  # Always 3 players per team
     
     def form_teams(self, players: List[Dict[str, Any]]) -> Dict[int, List[Dict[str, Any]]]:
-        """Form random teams from players and assign leaders
+        """Form random teams from players and assign leaders (dynamic team count)
         
         Args:
             players: List of player dicts with user_id and username
@@ -23,9 +22,26 @@ class TeamService:
         Returns:
             Dictionary mapping team_number to list of players (with is_leader field)
         """
-        if len(players) != config.LOBBY_SIZE:
-            raise ValueError(f"Need exactly {config.LOBBY_SIZE} players, got {len(players)}")
+        num_players = len(players)
         
+        # Validate player count
+        if num_players < config.MIN_PLAYERS:
+            raise ValueError(f"Need at least {config.MIN_PLAYERS} players, got {num_players}")
+        
+        if num_players > config.MAX_PLAYERS:
+            raise ValueError(f"Maximum {config.MAX_PLAYERS} players allowed, got {num_players}")
+        
+        # Check if divisible by team size
+        if num_players % self.team_size != 0:
+            raise ValueError(
+                f"Player count ({num_players}) must be divisible by team size ({self.team_size}). "
+                f"Excess players should be removed first."
+            )
+        
+        # Calculate dynamic team count
+        num_teams = num_players // self.team_size
+        
+        # Split into teams
         teams = split_into_teams(players, self.team_size)
         
         # Assign random leader to each team
