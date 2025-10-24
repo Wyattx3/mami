@@ -1166,7 +1166,7 @@ async def start_newgame_callback_handler(update: Update, context: ContextTypes.D
     lobby_message = f"""
 🎮 **Game Lobby**
 
-**Players:** 0/{config.LOBBY_SIZE}
+**Players:** 0/{config.MAX_PLAYERS} (Min: {config.MIN_PLAYERS})
 
 Waiting for players to join...
 """

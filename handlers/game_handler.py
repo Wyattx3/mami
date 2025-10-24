@@ -47,8 +47,8 @@ class GameHandler:
         players = await db_manager.get_lobby_players()
         logger.debug(f"Retrieved {len(players)} players from lobby")
         
-        if len(players) < config.LOBBY_SIZE:
-            logger.warning(f"Not enough players to start game: {len(players)}/{config.LOBBY_SIZE}")
+        if len(players) < config.MIN_PLAYERS:
+            logger.warning(f"Not enough players to start game: {len(players)} (minimum: {config.MIN_PLAYERS})")
             return None
         
         # Select random theme
