@@ -1191,8 +1191,46 @@ async def team_chat_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ==================== Error Handler ====================
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle errors"""
-    logger.error(f"Update {update} caused error {context.error}", exc_info=context.error)
+    """Handle errors with graceful handling of common issues"""
+    from telegram.error import Forbidden, BadRequest, TimedOut, NetworkError
+    
+    error = context.error
+    
+    # Handle Forbidden errors (bot kicked from group, blocked by user)
+    if isinstance(error, Forbidden):
+        chat_id = update.effective_chat.id if update.effective_chat else "unknown"
+        logger.warning(
+            f"Forbidden error in chat {chat_id}: {error}. "
+            "Bot may have been kicked or blocked. Silently ignoring."
+        )
+        return
+    
+    # Handle BadRequest errors (invalid parameters, etc.)
+    if isinstance(error, BadRequest):
+        logger.warning(f"BadRequest error: {error}", exc_info=False)
+        return
+    
+    # Handle timeout errors
+    if isinstance(error, TimedOut):
+        logger.warning(f"Request timed out: {error}", exc_info=False)
+        return
+    
+    # Handle network errors
+    if isinstance(error, NetworkError):
+        logger.warning(f"Network error: {error}", exc_info=False)
+        return
+    
+    # Log other errors as actual errors
+    logger.error(
+        f"Unhandled error in update {update.update_id if update else 'unknown'}: {error}",
+        exc_info=error,
+        extra={
+            'update_id': update.update_id if update else None,
+            'user_id': update.effective_user.id if update and update.effective_user else None,
+            'chat_id': update.effective_chat.id if update and update.effective_chat else None,
+            'error_type': type(error).__name__
+        }
+    )
 
 
 # ==================== Main ====================
