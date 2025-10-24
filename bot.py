@@ -112,25 +112,46 @@ MBTI နှင့် Zodiac signs ကို အခြေခံထားတဲ့
 Game ပြီးမှ `/start` ကို ထပ်ပို့ပြီး game အသစ်စတင်နိုင်ပါတယ်။
 """
             await update.message.reply_text(welcome_message, parse_mode='Markdown')
-        else:
-            # No active game - show New Game button
-            welcome_message = """
+            return
+        
+        # Check if lobby is already open
+        lobby_count = await db_manager.get_lobby_count()
+        if lobby_count > 0:
+            # Lobby exists - don't show New Game button
+            logger.warning(f"Channel {chat_id} has active lobby with {lobby_count} players, not showing New Game button")
+            welcome_message = f"""
+🎮 **Telegram Strategy Game**
+
+MBTI နှင့် Zodiac signs ကို အခြေခံထားတဲ့ team-based strategy game ကြိုဆိုပါတယ်!
+
+⚠️ **Lobby တစ်ခု ဖွင့်ထားပြီးသားပါ!**
+
+လက်ရှိ players: **{lobby_count}**
+
+Players များက ဝင်ရောက်နေပါသည်။ Join လုပ်ချင်ရင် lobby message မှာ "Join Game" button ကို နှိပ်ပါ။
+"""
+            await update.message.reply_text(welcome_message, parse_mode='Markdown')
+            return
+        
+        # No active game or lobby - show New Game button
+        welcome_message = f"""
 🎮 **Telegram Strategy Game**
 
 MBTI နှင့် Zodiac signs ကို အခြေခံထားတဲ့ team-based strategy game ကြိုဆိုပါတယ်!
 
 **Game Rules:**
-• 9 players, 3 teams (3 players each)
+• {config.MIN_PLAYERS}-{config.MAX_PLAYERS} players, teams of {config.TEAM_SIZE}
 • 5 rounds of voting
 • AI-based character-role matching
+• 🎲 Dice option for random selection
 • Best team wins!
 
 Ready to play? 🎉
 """
-            keyboard = InlineKeyboardMarkup([
-                [InlineKeyboardButton("🎮 New Game", callback_data="start_newgame")]
-            ])
-            await update.message.reply_text(welcome_message, reply_markup=keyboard, parse_mode='Markdown')
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("🎮 New Game", callback_data="start_newgame")]
+        ])
+        await update.message.reply_text(welcome_message, reply_markup=keyboard, parse_mode='Markdown')
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
