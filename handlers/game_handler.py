@@ -12,6 +12,7 @@ from services.scoring_service import scoring_service
 from handlers.voting_handler import voting_handler
 from utils.constants import ROLES, GAME_STATUS
 from utils.helpers import get_team_name
+from utils.message_delivery import message_delivery
 import config
 
 # Setup logger
@@ -324,18 +325,21 @@ class GameHandler:
             
             private_message = "\n".join(lines)
             
-            # Send to all players in team
+            # Send to all players in team (with retry logic)
             for player in team_players:
                 user_id = player.get('user_id')
-                try:
-                    await context.bot.send_message(
-                        chat_id=user_id,
-                        text=private_message,
-                        parse_mode='Markdown'
-                    )
-                    logger.debug(f"Private result sent to user {user_id}")
-                except Exception as e:
-                    logger.error(f"Failed to send private result to user {user_id}: {e}")
+                
+                result_msg = await message_delivery.send_message_with_retry(
+                    context.bot,
+                    chat_id=user_id,
+                    text=private_message,
+                    parse_mode='Markdown'
+                )
+                
+                if result_msg:
+                    logger.debug(f"Private result delivered to user {user_id}")
+                else:
+                    logger.error(f"Failed to deliver private result to user {user_id}")
             
             # Small delay between teams
             await asyncio.sleep(1)

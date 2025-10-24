@@ -12,6 +12,7 @@ from services.ai_service import ai_service
 from models.character import Character
 from utils.constants import ROLES
 from utils.helpers import parse_vote_callback, get_team_name
+from utils.message_delivery import message_delivery
 import config
 
 # Setup logger
@@ -131,26 +132,30 @@ class VotingHandler:
         # Create keyboard (same for all)
         keyboard = self.create_voting_keyboard(game_id, round_number, team_id, characters)
         
-        # Send to each player with personalized message
+        # Send to each player with personalized message (with retry logic)
         for player in team_players:
             user_id = player['user_id']
-            try:
-                # Create personalized message for this player
-                message_text = await self.create_voting_message(
-                    characters, role_name, role_description,
-                    team_id, team_players, user_id
-                )
-                
-                msg = await context.bot.send_message(
-                    chat_id=user_id,
-                    text=message_text,
-                    reply_markup=keyboard,
-                    parse_mode='Markdown'
-                )
+            
+            # Create personalized message for this player
+            message_text = await self.create_voting_message(
+                characters, role_name, role_description,
+                team_id, team_players, user_id
+            )
+            
+            # Send with retry logic for reliable delivery
+            msg = await message_delivery.send_message_with_retry(
+                context.bot,
+                chat_id=user_id,
+                text=message_text,
+                reply_markup=keyboard,
+                parse_mode='Markdown'
+            )
+            
+            if msg:
                 self.voting_messages[game_id][round_number][team_id][user_id] = msg.message_id
-                logger.debug(f"Voting message sent to user {user_id}")
-            except Exception as e:
-                logger.error(f"Error sending vote to user {user_id}: {e}")
+                logger.debug(f"Voting message delivered to user {user_id}")
+            else:
+                logger.error(f"Failed to deliver voting message to user {user_id} after all retries")
     
     async def handle_vote(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
         """Handle a vote submission (including dice roll)
@@ -237,21 +242,23 @@ class VotingHandler:
                 team_players = team_info['team_players']
                 team_name = get_team_name(team_players)
                 
-                # Send notification to other team members
+                # Send notification to other team members (with retry logic)
                 for player in team_players:
                     recipient_id = player.get('user_id')
                     if recipient_id != user_id:  # Don't send to voter
-                        try:
-                            await context.bot.send_message(
-                                chat_id=recipient_id,
-                                text=f"📢 **{team_name} Vote Update**\n\n"
-                                     f"@{voter_username} က **{character.name}** ကို "
-                                     f"**{role_name}** အတွက် vote လုပ်ပြီးပါပြီ။",
-                                parse_mode='Markdown'
-                            )
-                            logger.debug(f"Sent vote notification to team member {recipient_id}")
-                        except Exception as e:
-                            logger.error(f"Failed to send vote notification to {recipient_id}: {e}")
+                        notification = await message_delivery.send_message_with_retry(
+                            context.bot,
+                            chat_id=recipient_id,
+                            text=f"📢 **{team_name} Vote Update**\n\n"
+                                 f"@{voter_username} က **{character.name}** ကို "
+                                 f"**{role_name}** အတွက် vote လုပ်ပြီးပါပြီ။",
+                            parse_mode='Markdown'
+                        )
+                        
+                        if notification:
+                            logger.debug(f"Vote notification delivered to team member {recipient_id}")
+                        else:
+                            logger.error(f"Failed to deliver vote notification to {recipient_id}")
         except Exception as e:
             logger.error(f"Error updating vote message: {e}")
         
