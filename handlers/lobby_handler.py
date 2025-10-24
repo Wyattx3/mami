@@ -4,6 +4,9 @@ Lobby handler for join/quit operations
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 import logging
+import asyncio
+from datetime import datetime, timedelta
+from typing import Optional
 from database.db_manager import db_manager
 from utils.helpers import format_player_list
 import config
@@ -13,28 +16,59 @@ logger = logging.getLogger(__name__)
 
 
 class LobbyHandler:
-    """Handles lobby operations"""
+    """Handles lobby operations with dynamic sizing and timer"""
     
     def __init__(self):
-        self.lobby_size = config.LOBBY_SIZE
+        self.min_players = config.MIN_PLAYERS
+        self.max_players = config.MAX_PLAYERS
+        self.lobby_timeout = config.LOBBY_TIMEOUT
+        
+        # Track lobby timer
+        self.lobby_start_time: Optional[datetime] = None
+        self.lobby_chat_id: Optional[int] = None
+        self.lobby_message_id: Optional[int] = None
+        self.timer_task: Optional[asyncio.Task] = None
     
-    async def create_lobby_message(self, update: Update) -> str:
-        """Create lobby message with current players"""
-        players = await db_manager.get_lobby_players()
+    async def create_lobby_message(self, update: Update = None, players: list = None) -> str:
+        """Create lobby message with current players and timer"""
+        if players is None:
+            players = await db_manager.get_lobby_players()
         count = len(players)
+        
+        # Calculate remaining time
+        time_remaining = "N/A"
+        if self.lobby_start_time:
+            elapsed = (datetime.now() - self.lobby_start_time).total_seconds()
+            remaining = max(0, self.lobby_timeout - elapsed)
+            time_remaining = f"{int(remaining)}s"
         
         message_lines = [
             "🎮 **GAME LOBBY**",
             "",
-            f"👥 Players: {count}/{self.lobby_size}",
+            f"👥 Players: **{count}** (Min: {self.min_players}, Max: {self.max_players})",
+            f"⏱️ Time: **{time_remaining}**",
             "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
         ]
         
+        # Status message
+        if count < self.min_players:
+            needed = self.min_players - count
+            message_lines.append(f"\n⚠️ အနည်းဆုံး {needed} ယောက် ထပ်လိုအပ်ပါသည်")
+        elif count >= self.min_players:
+            # Calculate teams
+            num_teams = count // config.TEAM_SIZE
+            excess = count % config.TEAM_SIZE
+            if excess > 0:
+                message_lines.append(f"\n✅ စတင်နိုင်ပါပြီ! (Teams: {num_teams}, Excess: {excess})")
+                message_lines.append(f"⚠️ Timer ပြီးရင် excess {excess} ယောက်ကို ဖြုတ်ပြီး စတင်မည်")
+            else:
+                message_lines.append(f"\n✅ အဆင်သင့်! (Teams: {num_teams})")
+        
+        message_lines.append("")
+        
         if players:
-            message_lines.append("")
             message_lines.append(format_player_list(players))
         else:
-            message_lines.append("")
             message_lines.append("⚠️ No players yet")
         
         message_lines.append("")

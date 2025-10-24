@@ -97,17 +97,25 @@ def format_timestamp(dt: datetime = None) -> str:
 
 def parse_vote_callback(callback_data: str) -> Dict[str, Any]:
     """Parse vote callback data
-    Format: vote_{game_id}_{round}_{team}_{character_id}
+    Format: vote_{game_id}_{round}_{team}_{character_id or 'dice'}
     """
     parts = callback_data.split('_')
     if len(parts) != 5 or parts[0] != 'vote':
         return None
     
+    # Handle dice option (character_id = 'dice')
+    character_id = parts[4]
+    if character_id != 'dice':
+        try:
+            character_id = int(character_id)
+        except ValueError:
+            return None
+    
     return {
         'game_id': int(parts[1]),
         'round': int(parts[2]),
         'team': int(parts[3]),
-        'character_id': int(parts[4])
+        'character_id': character_id
     }
 
 

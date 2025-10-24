@@ -74,7 +74,8 @@ class VotingHandler:
         lines.append("")
         lines.append(f"📋 **Round Voting: {role}**")
         lines.append(f"*{role_description}*\n")
-        lines.append("Character များထဲက အသင့်တော်ဆုံးကို ရွေးချယ်ပါ:\n")
+        lines.append("Character များထဲက အသင့်တော်ဆုံးကို ရွေးချယ်ပါ:")
+        lines.append("(သို့မဟုတ်) 🎲 Random character ကို ရွေးချယ်နိုင်ပါသည်။\n")
         
         for i, char in enumerate(characters, 1):
             # Get AI description
@@ -90,14 +91,23 @@ class VotingHandler:
     
     def create_voting_keyboard(self, game_id: int, round_number: int, 
                               team_id: int, characters: List[Character]) -> InlineKeyboardMarkup:
-        """Create voting keyboard"""
+        """Create voting keyboard with 5 characters + dice option"""
         keyboard = []
+        
+        # Add buttons for each character
         for i, char in enumerate(characters, 1):
             button = InlineKeyboardButton(
                 f"✅ {char.name}",
                 callback_data=f"vote_{game_id}_{round_number}_{team_id}_{char.id}"
             )
             keyboard.append([button])
+        
+        # Add dice button for random selection
+        dice_button = InlineKeyboardButton(
+            "🎲 Random Character",
+            callback_data=f"vote_{game_id}_{round_number}_{team_id}_dice"
+        )
+        keyboard.append([dice_button])
         
         return InlineKeyboardMarkup(keyboard)
     
@@ -143,7 +153,7 @@ class VotingHandler:
                 logger.error(f"Error sending vote to user {user_id}: {e}")
     
     async def handle_vote(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
-        """Handle a vote submission
+        """Handle a vote submission (including dice roll)
         
         Returns:
             True if vote was recorded
@@ -162,6 +172,21 @@ class VotingHandler:
         team_id = vote_data['team']
         character_id = vote_data['character_id']
         user_id = query.from_user.id
+        
+        # Handle dice roll - select random character
+        if character_id == 'dice':
+            import random
+            # Get all characters from database
+            all_characters = await db_manager.get_all_characters()
+            if not all_characters:
+                await query.answer("❌ No characters available!", show_alert=True)
+                return False
+            
+            # Select random character
+            random_character = random.choice(all_characters)
+            character_id = random_character.id
+            logger.info(f"Dice roll - User {user_id} got random character: {random_character.name} (ID: {character_id})")
+            await query.answer(f"🎲 Random: {random_character.name}!")
         
         # Check if voting time has expired
         self.init_round_voting(game_id, round_number)

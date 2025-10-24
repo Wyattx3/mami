@@ -14,12 +14,17 @@ TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 # Game Configuration
-LOBBY_SIZE = int(os.getenv('LOBBY_SIZE', 9))
-TEAM_SIZE = int(os.getenv('TEAM_SIZE', 3))
+MIN_PLAYERS = int(os.getenv('MIN_PLAYERS', 6))  # Minimum 6 players
+MAX_PLAYERS = int(os.getenv('MAX_PLAYERS', 15))  # Maximum 15 players
+TEAM_SIZE = int(os.getenv('TEAM_SIZE', 3))  # Always 3 players per team
+LOBBY_TIMEOUT = int(os.getenv('LOBBY_TIMEOUT', 60))  # 60 seconds to join
 ROUND_TIME = int(os.getenv('ROUND_TIME', 60))
-NUM_TEAMS = LOBBY_SIZE // TEAM_SIZE  # 3 teams
 NUM_ROUNDS = 5
-CHARACTERS_PER_VOTING = 4
+CHARACTERS_PER_VOTING = 5  # 5 characters + 1 dice option
+
+# Legacy (for backward compatibility)
+LOBBY_SIZE = int(os.getenv('LOBBY_SIZE', 9))  # Default if not using dynamic
+NUM_TEAMS = 3  # Will be calculated dynamically
 
 # Demo/Testing Mode (change LOBBY_SIZE in .env to 1 for solo testing)
 DEMO_MODE = LOBBY_SIZE == 1
