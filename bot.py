@@ -5,6 +5,7 @@ import logging
 import asyncio
 import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.error import BadRequest
 from telegram.ext import (
     Application, 
     CommandHandler, 
@@ -1211,7 +1212,7 @@ async def group_message_filter(update: Update, context: ContextTypes.DEFAULT_TYP
         try:
             await update.message.delete()
             logger.debug(f"Deleted message from user {user_id} in chat {chat_id} (game/lobby active)")
-        except telegram.error.BadRequest as e:
+        except BadRequest as e:
             # Bot doesn't have delete permissions or message is too old
             if "Message can't be deleted" in str(e):
                 logger.debug(f"Cannot delete message in chat {chat_id} (missing permissions)")
