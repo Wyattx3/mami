@@ -1405,7 +1405,7 @@ ZODIAC_SCORES = {
         'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
     },
     'အကြံပေး': {
-        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
+        'Virgo': 10, 'Aquarius': 10, 'Capricorn': 8, 'Scorpio': 7,
         'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
         'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
     },

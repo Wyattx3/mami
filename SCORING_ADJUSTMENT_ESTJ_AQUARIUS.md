@@ -49,10 +49,10 @@ User requested that **ESTJ + Aquarius** combination should receive **perfect sco
 }
 ```
 
-**Zodiac scores (unchanged):**
+**Zodiac scores (updated):**
 ```python
 'အကြံပေး': {
-    'Aquarius': 9,  # Already high
+    'Aquarius': 10,  # ✅ Boosted from 9 → 10
     ...
 }
 ```
@@ -84,8 +84,8 @@ Added **ESTJ** to `suitable_mbti` for both **အကြံပေး** roles:
 
 **After:**
 - MBTI: 10/10 ✅
-- Zodiac: 9/10
-- **Combined: 19 points (Average: 9.5/10)**
+- Zodiac: 10/10 ✅
+- **Combined: 20 points (Average: 10.0/10)** 🎯 PERFECT SCORE!
 
 ### Result:
 - **ESTJ + Aquarius** characters will now excel in advisory/counselor roles
