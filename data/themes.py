@@ -17,7 +17,7 @@ THEMES = {
         'roles': {
             1: {'name': 'ဘုရင်', 'description': 'ဦးဆောင်နိုင်တဲ့သူ', 'suitable_mbti': ['ENTJ', 'ENFJ', 'ESTJ', 'ENTP']},
             2: {'name': 'စစ်သူကြီး', 'description': 'သတ္တိရှိသူ', 'suitable_mbti': ['ESTP', 'ISTP', 'ESTJ', 'ISTJ']},
-            3: {'name': 'အကြံပေး', 'description': 'ဉာဏ်ပညာရှိသူ', 'suitable_mbti': ['INTJ', 'INTP', 'INFJ', 'ENTP']},
+            3: {'name': 'အကြံပေး', 'description': 'ဉာဏ်ပညာရှိသူ', 'suitable_mbti': ['INTJ', 'INTP', 'INFJ', 'ENTP', 'ESTJ']},
             4: {'name': 'လယ်သမား', 'description': 'စီးပွားရှာတတ်သူ', 'suitable_mbti': ['ISTJ', 'ISFJ', 'ESTJ', 'ESFJ']},
             5: {'name': 'ဘုန်းကြီး', 'description': 'လိမ္မာယဥ်ကျေးသူ', 'suitable_mbti': ['INFJ', 'INFP', 'ENFJ', 'ISFJ']}
         }
@@ -43,7 +43,7 @@ THEMES = {
         'roles': {
             1: {'name': 'စစ်သူကြီး', 'description': 'သတ္တိနှင့် ရဲစွမ်းသူ', 'suitable_mbti': ['ESTP', 'ISTP', 'ESTJ', 'ISTJ']},
             2: {'name': 'အမတ်', 'description': 'တရားမျှတသူ', 'suitable_mbti': ['INTJ', 'ENTJ', 'ISTJ', 'ESTJ']},
-            3: {'name': 'အကြံပေး', 'description': 'ပညာရှိဉာဏ်ရှိသူ', 'suitable_mbti': ['INTJ', 'INTP', 'INFJ', 'ENTP']},
+            3: {'name': 'အကြံပေး', 'description': 'ပညာရှိဉာဏ်ရှိသူ', 'suitable_mbti': ['INTJ', 'INTP', 'INFJ', 'ENTP', 'ESTJ']},
             4: {'name': 'မိန်းမစိုး', 'description': 'လုပ်ငန်းစွမ်းဆောင်ရည်ရှိသူ', 'suitable_mbti': ['ENTJ', 'ESTJ', 'ENFJ', 'ESFJ']},
             5: {'name': 'စားတော်ချက်', 'description': 'ဖန်တီးမှုရှိသူ', 'suitable_mbti': ['ISFP', 'ESFP', 'INFP', 'ENFP']}
         }

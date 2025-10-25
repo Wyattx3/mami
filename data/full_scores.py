@@ -710,7 +710,7 @@ MBTI_SCORES = {
     'အကြံပေး': {
         'INTJ': 10, 'INTP': 9, 'INFJ': 8, 'ENTP': 8,
         'ENTJ': 6, 'INFP': 6, 'ENFJ': 6, 'ENFP': 6,
-        'ISTJ': 2, 'ISFJ': 2, 'ESTJ': 2, 'ESFJ': 2,
+        'ISTJ': 6, 'ISFJ': 2, 'ESTJ': 10, 'ESFJ': 2,
         'ISTP': 6, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
     },
     'အခွန်ကောက်အမတ်': {
