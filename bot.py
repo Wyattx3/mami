@@ -262,7 +262,6 @@ async def newgame_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def cancelgame_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /cancelgame command - cancel active game"""
-    import aiosqlite
     from telegram.constants import ChatType
     from utils.constants import GAME_STATUS
     
@@ -292,16 +291,10 @@ async def cancelgame_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
         return
     
-    # Get active game details
-    async with aiosqlite.connect(db_manager.db_path) as db:
-        db.row_factory = aiosqlite.Row
-        cursor = await db.execute(
-            'SELECT id, status FROM games WHERE lobby_chat_id = ? AND status IN (?, ?) ORDER BY id DESC LIMIT 1',
-            (chat_id, GAME_STATUS['LOBBY'], GAME_STATUS['IN_PROGRESS'])
-        )
-        game_row = await cursor.fetchone()
+    # Get active game details using proper PostgreSQL method
+    game = await db_manager.get_active_game_by_chat(chat_id)
     
-    if not game_row:
+    if not game:
         logger.error(f"Channel {chat_id} - Active game check passed but no game found")
         await update.message.reply_text(
             "❌ **Error: Game ကို ရှာမတွေ့ပါ!**",
@@ -309,8 +302,8 @@ async def cancelgame_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
         return
     
-    game_id = game_row['id']
-    game_status = game_row['status']
+    game_id = game.id
+    game_status = game.status
     
     # Permission check - group admins or game participants can cancel
     user_id = update.effective_user.id
@@ -1218,6 +1211,12 @@ async def group_message_filter(update: Update, context: ContextTypes.DEFAULT_TYP
         try:
             await update.message.delete()
             logger.debug(f"Deleted message from user {user_id} in chat {chat_id} (game/lobby active)")
+        except telegram.error.BadRequest as e:
+            # Bot doesn't have delete permissions or message is too old
+            if "Message can't be deleted" in str(e):
+                logger.debug(f"Cannot delete message in chat {chat_id} (missing permissions)")
+            else:
+                logger.warning(f"Failed to delete message: {e}")
         except Exception as e:
             logger.warning(f"Failed to delete message: {e}")
 

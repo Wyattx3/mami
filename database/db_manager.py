@@ -570,6 +570,27 @@ class DatabaseManager:
             has_active = count > 0
             logger.debug(f"Channel {chat_id} active game status: {has_active}")
             return has_active
+    
+    async def get_active_game_by_chat(self, chat_id: int) -> Optional[Game]:
+        """Get active game for a chat
+        
+        Args:
+            chat_id: Telegram chat ID
+            
+        Returns:
+            Game object if found, None otherwise
+        """
+        logger.debug(f"Getting active game for chat {chat_id}")
+        async with self.pool.acquire() as conn:
+            row = await conn.fetchrow('''
+                SELECT * FROM games
+                WHERE lobby_chat_id = $1 AND status IN ('lobby', 'in_progress')
+                ORDER BY id DESC LIMIT 1
+            ''', chat_id)
+            
+            if row:
+                return Game.from_dict(dict(row))
+            return None
 
 
 # Global database manager instance
