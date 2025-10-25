@@ -213,22 +213,20 @@ class ScoringService:
         total_score = results.get('total_score', 0)
         
         lines = [
-            f"🎮 {team_name}",
+            f"🏆 Team {team_name} Results 🎰",
             ""
         ]
         
         # Players with leader mark
         if players:
-            lines.append("👥 Players:")
+            lines.append("Players")
+            player_names = []
             for player in players:
                 username = player.get('username', 'Unknown')
                 leader_mark = " 👑" if player.get('is_leader') else ""
-                lines.append(f"   • {username}{leader_mark}")
-            lines.append("")
-        
-        lines.append("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
-        lines.append("📋 Round Results:")
-        lines.append("")
+                player_names.append(f"{username}{leader_mark}")
+            lines.append(" / ".join(player_names))
+            lines.append("━━━━━━━━━━")
         
         # Rounds with scores
         rounds = results.get('rounds', [])
@@ -236,14 +234,11 @@ class ScoringService:
             role = round_data.get('role', 'Unknown')
             char_name = round_data.get('character_name', 'Optional')
             score = round_data.get('score', 0)
-            lines.append(f"Round {i}: {role}")
-            lines.append(f"   → {char_name}")
-            lines.append(f"   → Score: {score}/10 မှတ်")
+            lines.append(f"✓ {role}")
+            lines.append(f"    → {char_name} ({score} မှတ်)")
             lines.append("")
         
-        lines.append("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
-        lines.append(f"💯 TOTAL SCORE: {total_score} မှတ်")
-        lines.append("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
+        lines.append(f"💯 Total: {total_score} မှတ်")
         
         return "\n".join(lines)
     
@@ -260,14 +255,34 @@ class ScoringService:
         """
         messages = []
         
+        # Winner announcement first
+        if winner_team in results:
+            winner_results = results[winner_team]
+            players = winner_results.get('players', [])
+            team_name = get_team_name(players) if players else f"Team {winner_team}"
+            total_score = winner_results.get('total_score', 0)
+            
+            player_mentions = []
+            for player in players:
+                username = player.get('username', 'Unknown')
+                leader_mark = " 👑" if player.get('is_leader') else ""
+                player_mentions.append(f"@{username}{leader_mark}")
+            
+            winner_msg = f"""Winner Team 🏆
+
+Team {team_name} 🚩
+Name Of The Players
+{" / ".join(player_mentions)}
+💯 Score: {total_score} မှတ်
+
+Congrats On Winning Guys 👑"""
+            
+            messages.append(winner_msg)
+        
+        # All team results
         for team_id in sorted(results.keys()):
             team_results = results[team_id]
             message = self.format_team_results(team_id, team_results)
-            
-            # Add winner indicator
-            if team_id == winner_team:
-                message = "👑 WINNER! 👑\n\n" + message
-            
             messages.append(message)
         
         return messages

@@ -250,12 +250,12 @@ class GameHandler:
         role_name = role_info.get('name', 'Unknown')
         
         lines = [
-            f"✅ ROUND {round_number}/5 COMPLETED",
+            f"🎯 ROUND {round_number}/5 COMPLETED",
             "",
-            f"👑 Role: {role_name}",
+            f"🔎 Role: {role_name}",
             "",
             "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬",
-            "📊 Team Selections:",
+            "Team Selections:",
             ""
         ]
         
@@ -270,13 +270,13 @@ class GameHandler:
             else:
                 char_name = "No selection"
             
-            lines.append(f"✓ {team_name}")
-            lines.append(f"   → Final: {char_name}")
+            lines.append(f"🚩 Team {team_name}")
+            lines.append(f"   → {char_name} ✅")
             
             # Get individual votes
             votes = await db_manager.get_round_votes(game_id, round_number, team_id)
             if votes:
-                lines.append(f"   📝 Individual votes:")
+                lines.append(f"   📊 Individual votes:")
                 for user_id, voted_char_id in votes.items():
                     # Get player info
                     player = next((p for p in teams[team_id] if p['user_id'] == int(user_id)), None)
@@ -288,9 +288,8 @@ class GameHandler:
                         leader_mark = " 👑" if player.get('is_leader') else ""
                         lines.append(f"      • {username}{leader_mark} → {voted_char_name}")
             
-            lines.append("")
+            lines.append("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
         
-        lines.append("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
         message = "\n".join(lines)
         
         # Edit this round's message with results (without Markdown to avoid parsing errors)
