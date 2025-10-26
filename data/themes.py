@@ -399,6 +399,133 @@ THEMES = {
             4: {'name': 'R Zarni', 'description': 'ခေတ်သစ် သီဆိုသူ', 'suitable_mbti': ['ENFP', 'ESFP', 'ENTP', 'ESTP']},
             5: {'name': 'Kyar Pauk', 'description': 'ထူးခြားသော အသံလှိုင်း', 'suitable_mbti': ['INFP', 'ISFP', 'ENFP', 'ESFP']}
         }
+    },
+    
+    # Supernatural Series
+    30: {
+        'id': 30,
+        'name': 'နာနာဘာဝ Build',
+        'emoji': '👻',
+        'category': 'supernatural',
+        'roles': {
+            1: {'name': 'သရဲ', 'description': 'ကြောက်မက်ဖွယ် ဝိညာဥ်', 'suitable_mbti': ['INFP', 'INFJ', 'INTP', 'INTJ']},
+            2: {'name': 'တစ္ဆေ', 'description': 'စိတ်ဆိုးလွန်းသော နတ်', 'suitable_mbti': ['ESTP', 'ENTP', 'ESTJ', 'ENTJ']},
+            3: {'name': 'ပြိတ္တာ', 'description': 'ဆာလောင်နေသော ဝိညာဥ်', 'suitable_mbti': ['ISFP', 'INFP', 'ISTP', 'INTP']},
+            4: {'name': 'အသူရကယ်', 'description': 'အစွမ်းထက် နတ်ဆိုး', 'suitable_mbti': ['ENTJ', 'ESTJ', 'ENTP', 'ESTP']},
+            5: {'name': 'ဝိညာဥ်', 'description': 'သဘာဝလွန် စွမ်းအား', 'suitable_mbti': ['INFJ', 'INTJ', 'ENFJ', 'ENTJ']}
+        }
+    },
+    31: {
+        'id': 31,
+        'name': 'နာနာဘာဝ Build 2',
+        'emoji': '👻',
+        'category': 'supernatural',
+        'roles': {
+            1: {'name': 'နတ်ဆိုး', 'description': 'ဆိုးညစ်သော နတ်သား', 'suitable_mbti': ['ENTJ', 'ESTJ', 'ENTP', 'INTJ']},
+            2: {'name': 'ဥစ္စာစောင့်', 'description': 'ဘဏ္ဍာစောင့်ရှောက်သူ', 'suitable_mbti': ['ISTJ', 'ESTJ', 'INTJ', 'ENTJ']},
+            3: {'name': 'ရုပ်က္ခစိုး', 'description': 'ရုပ်ဝတ္ထုလောက အစိုးရ', 'suitable_mbti': ['ENTJ', 'ESTJ', 'INTJ', 'ISTJ']},
+            4: {'name': 'ချီးစားစုန်း', 'description': 'အနာဂတ်မြင်နိုင်သူ', 'suitable_mbti': ['INFJ', 'INTJ', 'ENFJ', 'ENTJ']},
+            5: {'name': 'သဘက်', 'description': 'သဘာဝတရား နတ်', 'suitable_mbti': ['INFP', 'ISFP', 'ENFP', 'ESFP']}
+        }
+    },
+    
+    # Occupation Series
+    32: {
+        'id': 32,
+        'name': 'အလုပ်အကိုင် Build',
+        'emoji': '💼',
+        'category': 'occupation',
+        'roles': {
+            1: {'name': 'နွားကျောင်းသား', 'description': 'တိရစ္ဆာန်ထိန်းသူ', 'suitable_mbti': ['ISFJ', 'ISTJ', 'ESFJ', 'ESTJ']},
+            2: {'name': 'အိမ်သာသန့်ရှင်းရေး', 'description': 'သန့်ရှင်းရေးအလုပ်သမား', 'suitable_mbti': ['ISFJ', 'ISTJ', 'ISFP', 'ISTP']},
+            3: {'name': 'ခြံစောင့်', 'description': 'လုံခြုံရေးတာဝန်ခံ', 'suitable_mbti': ['ISTJ', 'ISTP', 'ESTJ', 'ESTP']},
+            4: {'name': 'ပလုံကောက်သမား', 'description': 'လယ်ယာအလုပ်သမား', 'suitable_mbti': ['ISFJ', 'ISTJ', 'ESFJ', 'ESTJ']},
+            5: {'name': 'အပြာသရုပ်ဆောင်', 'description': 'ရဲရင့်သော အနုပညာရှင်', 'suitable_mbti': ['ESFP', 'ESTP', 'ENFP', 'ENTP']}
+        }
+    },
+    33: {
+        'id': 33,
+        'name': 'အလုပ်အကိုင် Build 2',
+        'emoji': '💼',
+        'category': 'occupation',
+        'roles': {
+            1: {'name': 'စားပွဲထိုး', 'description': 'ဧည့်ဝန်ဆောင်မှုပေးသူ', 'suitable_mbti': ['ESFJ', 'ENFJ', 'ESFP', 'ENFP']},
+            2: {'name': 'ချဲဒိုင်', 'description': 'ဆောက်လုပ်ရေးအလုပ်သမား', 'suitable_mbti': ['ISTP', 'ESTP', 'ISTJ', 'ESTJ']},
+            3: {'name': 'တပ်မတော်သားကြီး', 'description': 'စစ်ဘက်ခေါင်းဆောင်', 'suitable_mbti': ['ESTJ', 'ENTJ', 'ISTJ', 'INTJ']},
+            4: {'name': 'ဟက်ကာ', 'description': 'နည်းပညာကျွမ်းကျင်သူ', 'suitable_mbti': ['INTP', 'INTJ', 'ISTP', 'ENTP']},
+            5: {'name': 'သူတောင်းစား', 'description': 'နှိမ့်ချသော ဘဝ', 'suitable_mbti': ['INFP', 'ISFP', 'INTP', 'ISTP']}
+        }
+    },
+    
+    # Body Features Series
+    34: {
+        'id': 34,
+        'name': 'ခန္ဓာကိုယ် Build',
+        'emoji': '🧍',
+        'category': 'physical',
+        'roles': {
+            1: {'name': 'ဖင်ကြီးသူ', 'description': 'ထင်ရှားသော ခန္ဓာလက္ခဏာ', 'suitable_mbti': ['ESFP', 'ESTP', 'ENFP', 'ENTP']},
+            2: {'name': 'အသားမဲသူ', 'description': 'သဘာဝအသားအရောင်', 'suitable_mbti': ['ISFP', 'ISTP', 'ESFP', 'ESTP']},
+            3: {'name': 'ဖက်တီး', 'description': 'ကျန်းမာသော ခန္ဓာကိုယ်', 'suitable_mbti': ['ESFJ', 'ISFJ', 'ESFP', 'ISFP']},
+            4: {'name': 'သွားခေါ', 'description': 'ထူးခြားသော အပြုံး', 'suitable_mbti': ['ENFP', 'ESFP', 'INFP', 'ISFP']},
+            5: {'name': 'မျက်ပြူး', 'description': 'မျက်လုံးသေးသူ', 'suitable_mbti': ['INFP', 'ISFP', 'INTP', 'ISTP']}
+        }
+    },
+    35: {
+        'id': 35,
+        'name': 'ခန္ဓာကိုယ် Build 2',
+        'emoji': '🧍',
+        'category': 'physical',
+        'roles': {
+            1: {'name': 'ဂျပု', 'description': 'အရပ်ပိတ်သူ', 'suitable_mbti': ['INFP', 'ISFP', 'INTP', 'ISTP']},
+            2: {'name': 'ဝါးခြမ်းပြား', 'description': 'ပိန်ပိန်လှလှ', 'suitable_mbti': ['INFP', 'ISFP', 'INTP', 'ISTP']},
+            3: {'name': 'ကတုံး', 'description': 'အရပ်တိုသူ', 'suitable_mbti': ['ISFP', 'ISTP', 'ESFP', 'ESTP']},
+            4: {'name': 'ခပ်ချောချော', 'description': 'လှပသော အသွင်အပြင်', 'suitable_mbti': ['ESFP', 'ENFP', 'ISFP', 'INFP']},
+            5: {'name': 'ကျပ်မပြည့်', 'description': 'ပိန်ပိန်ကိုယ်', 'suitable_mbti': ['INTP', 'INFP', 'ISTP', 'ISFP']}
+        }
+    },
+    
+    # Behavior Series
+    36: {
+        'id': 36,
+        'name': 'အမူအကျင့် Build',
+        'emoji': '🎭',
+        'category': 'behavior',
+        'roles': {
+            1: {'name': 'တက်ကြွသူ', 'description': 'စွမ်းအင်ပြည့်ဝသူ', 'suitable_mbti': ['ESTP', 'ESFP', 'ENTP', 'ENFP']},
+            2: {'name': 'ငပျင်း', 'description': 'လှုပ်ရှားမှုနည်းသူ', 'suitable_mbti': ['INTP', 'INFP', 'ISTP', 'ISFP']},
+            3: {'name': 'လူလိမ်', 'description': 'လိမ်ညာတတ်သူ', 'suitable_mbti': ['ENTP', 'ESTP', 'ENTJ', 'ESTJ']},
+            4: {'name': 'အချိန်မတိကျသူ', 'description': 'အချိန်ပျက်တတ်သူ', 'suitable_mbti': ['ENFP', 'INFP', 'ENTP', 'INTP']},
+            5: {'name': 'ကတိဖျက်သူ', 'description': 'ကတိမတည်သူ', 'suitable_mbti': ['ESTP', 'ESFP', 'ENTP', 'ENFP']}
+        }
+    },
+    37: {
+        'id': 37,
+        'name': 'အမူအကျင့် Build 2',
+        'emoji': '🎭',
+        'category': 'behavior',
+        'roles': {
+            1: {'name': 'တကိုယ်ကောင်းဆန်သူ', 'description': 'ကိုယ်ကျိုးစီးပွားသမား', 'suitable_mbti': ['ENTJ', 'ESTJ', 'INTJ', 'ISTJ']},
+            2: {'name': 'မာနကြီးသူ', 'description': 'မာန်မာနရှိသူ', 'suitable_mbti': ['ENTJ', 'ESTJ', 'ENTP', 'ESTP']},
+            3: {'name': 'နွားဆန်သူ', 'description': 'စိတ်မပြောင်းလဲသူ', 'suitable_mbti': ['ISTJ', 'ESTJ', 'INTJ', 'ISTP']},
+            4: {'name': 'အပျော်မက်သူ', 'description': 'ပျော်ရွှင်မှုကြိုက်သူ', 'suitable_mbti': ['ESFP', 'ENFP', 'ESTP', 'ENTP']},
+            5: {'name': 'ပိုက်ဆံချေးသူ', 'description': 'စီးပွားရေးကျွမ်းကျင်သူ', 'suitable_mbti': ['ENTJ', 'ESTJ', 'INTJ', 'ISTJ']}
+        }
+    },
+    
+    # UC Build Series
+    38: {
+        'id': 38,
+        'name': 'UC Build',
+        'emoji': '👥',
+        'category': 'group',
+        'roles': {
+            1: {'name': 'ဉာဏ်ကောင်းသူ', 'description': 'ထက်မြက်သော စိတ်ဉာဏ်', 'suitable_mbti': ['INTJ', 'INTP', 'ENTJ', 'ENTP']},
+            2: {'name': 'စကားများသူ', 'description': 'စကားပြောတတ်သူ', 'suitable_mbti': ['ENFP', 'ESFP', 'ENTP', 'ESTP']},
+            3: {'name': 'ဉာဏ်နည်းသူ', 'description': 'ရိုးရှင်းသော စိတ်', 'suitable_mbti': ['ISFP', 'ESFP', 'ISFJ', 'ESFJ']},
+            4: {'name': 'စိတ်ကောက်လွယ်သူ', 'description': 'ထိခိုက်လွယ်သော စိတ်', 'suitable_mbti': ['INFP', 'ISFP', 'INFJ', 'ISFJ']},
+            5: {'name': 'သဘောထားကြီးသူ', 'description': 'ရင့်ကျက်သော စိတ်ထား', 'suitable_mbti': ['ENFJ', 'INFJ', 'ENTJ', 'INTJ']}
+        }
     }
 }
 
