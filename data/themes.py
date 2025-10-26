@@ -520,7 +520,7 @@ THEMES = {
         'emoji': '👥',
         'category': 'group',
         'roles': {
-            1: {'name': 'ဉာဏ်ကောင်းသူ', 'description': 'ထက်မြက်သော စိတ်ဉာဏ်', 'suitable_mbti': ['INTJ', 'INTP', 'ENTJ', 'ENTP']},
+            1: {'name': 'ဉာဏ်ကောင်းသူ', 'description': 'ထက်မြက်သော စိတ်ဉာဏ်', 'suitable_mbti': ['INTJ', 'INTP', 'ENTJ', 'ENTP', 'ESTJ']},
             2: {'name': 'စကားများသူ', 'description': 'စကားပြောတတ်သူ', 'suitable_mbti': ['ENFP', 'ESFP', 'ENTP', 'ESTP']},
             3: {'name': 'ဉာဏ်နည်းသူ', 'description': 'ရိုးရှင်းသော စိတ်', 'suitable_mbti': ['ISFP', 'ESFP', 'ISFJ', 'ESFJ']},
             4: {'name': 'စိတ်ကောက်လွယ်သူ', 'description': 'ထိခိုက်လွယ်သော စိတ်', 'suitable_mbti': ['INFP', 'ISFP', 'INFJ', 'ISFJ']},

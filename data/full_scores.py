@@ -347,6 +347,18 @@ MBTI_SCORES = {
         'INFJ': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 6,
         'ESTJ': 2, 'ESFJ': 6, 'ISTP': 6, 'ESTP': 6
     },
+    'ကတိဖျက်သူ': {
+        'ESTP': 10, 'ESFP': 9, 'ENTP': 8, 'ENFP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'INFJ': 2,
+        'INFP': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 2,
+        'ESTJ': 6, 'ESFJ': 6, 'ISTP': 6, 'ISFP': 6
+    },
+    'ကတုံး': {
+        'ISFP': 10, 'ISTP': 9, 'ESFP': 8, 'ESTP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 6,
+        'INFJ': 2, 'INFP': 6, 'ENFJ': 2, 'ENFP': 6,
+        'ISTJ': 6, 'ISFJ': 6, 'ESTJ': 2, 'ESFJ': 2
+    },
     'ကလေး': {
         'ENFP': 10, 'ESFP': 9, 'INFP': 8, 'ISFP': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 6,
@@ -358,6 +370,12 @@ MBTI_SCORES = {
         'INTJ': 2, 'INTP': 2, 'INFJ': 2, 'INFP': 2,
         'ENFJ': 6, 'ENFP': 6, 'ISTJ': 2, 'ISFJ': 2,
         'ESFJ': 6, 'ISTP': 6, 'ISFP': 2, 'ESFP': 6
+    },
+    'ကျပ်မပြည့်': {
+        'INTP': 10, 'INFP': 9, 'ISTP': 8, 'ISFP': 8,
+        'INTJ': 6, 'ENTJ': 2, 'ENTP': 6, 'INFJ': 6,
+        'ENFJ': 2, 'ENFP': 6, 'ISTJ': 6, 'ISFJ': 6,
+        'ESTJ': 2, 'ESFJ': 2, 'ESTP': 6, 'ESFP': 6
     },
     'ကျားဖြန့် (လူလိမ်)': {
         'ENTP': 10, 'ESTP': 9, 'ENTJ': 8, 'ESTJ': 8,
@@ -377,17 +395,53 @@ MBTI_SCORES = {
         'ISTJ': 2, 'ISFJ': 6, 'ESTJ': 2, 'ESFJ': 6,
         'ISTP': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
     },
+    'ခပ်ချောချော': {
+        'ESFP': 10, 'ENFP': 9, 'ISFP': 8, 'INFP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 6,
+        'INFJ': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 6,
+        'ESTJ': 2, 'ESFJ': 6, 'ISTP': 6, 'ESTP': 6
+    },
+    'ချီးစားစုန်း': {
+        'INFJ': 10, 'INTJ': 9, 'ENFJ': 8, 'ENTJ': 8,
+        'INTP': 6, 'ENTP': 6, 'INFP': 2, 'ENFP': 6,
+        'ISTJ': 2, 'ISFJ': 6, 'ESTJ': 6, 'ESFJ': 6,
+        'ISTP': 2, 'ISFP': 2, 'ESTP': 2, 'ESFP': 2
+    },
+    'ချဲဒိုင်': {
+        'ISTP': 10, 'ESTP': 9, 'ISTJ': 8, 'ESTJ': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'ENTP': 2,
+        'INFJ': 2, 'INFP': 2, 'ENFJ': 2, 'ENFP': 2,
+        'ISFJ': 6, 'ESFJ': 2, 'ISFP': 6, 'ESFP': 6
+    },
     'ချွေးမ': {
         'ISFJ': 10, 'ESFJ': 9, 'INFJ': 8, 'ENFJ': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 2,
         'INFP': 6, 'ENFP': 6, 'ISTJ': 2, 'ESTJ': 6,
         'ISTP': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
     },
+    'ခြံစောင့်': {
+        'ISTJ': 10, 'ISTP': 9, 'ESTJ': 8, 'ESTP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'ENTP': 2,
+        'INFJ': 2, 'INFP': 2, 'ENFJ': 2, 'ENFP': 2,
+        'ISFJ': 6, 'ESFJ': 2, 'ISFP': 6, 'ESFP': 6
+    },
     'ခွေးဝဲစား': {
         'ESTP': 10, 'ENTP': 9, 'ESFP': 8, 'ENFP': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'INFJ': 2,
         'INFP': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 2,
         'ESTJ': 6, 'ESFJ': 6, 'ISTP': 6, 'ISFP': 6
+    },
+    'ဂျပု': {
+        'INFP': 10, 'ISFP': 9, 'INTP': 8, 'ISTP': 8,
+        'INTJ': 6, 'ENTJ': 2, 'ENTP': 6, 'INFJ': 6,
+        'ENFJ': 2, 'ENFP': 6, 'ISTJ': 6, 'ISFJ': 6,
+        'ESTJ': 2, 'ESFJ': 2, 'ESTP': 6, 'ESFP': 6
+    },
+    'ငပျင်း': {
+        'INTP': 10, 'INFP': 9, 'ISTP': 8, 'ISFP': 8,
+        'INTJ': 6, 'ENTJ': 2, 'ENTP': 6, 'INFJ': 6,
+        'ENFJ': 2, 'ENFP': 6, 'ISTJ': 6, 'ISFJ': 6,
+        'ESTJ': 2, 'ESFJ': 2, 'ESTP': 6, 'ESFP': 6
     },
     'ငြင်းလေ့ရှိသူ': {
         'INTJ': 10, 'INTP': 9, 'ENTJ': 8, 'ENTP': 8,
@@ -425,11 +479,35 @@ MBTI_SCORES = {
         'INFJ': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 6,
         'ESTJ': 2, 'ESFJ': 6, 'ISTP': 6, 'ESTP': 6
     },
+    'စားပွဲထိုး': {
+        'ESFJ': 10, 'ENFJ': 9, 'ESFP': 8, 'ENFP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'ENTP': 6,
+        'INFJ': 6, 'INFP': 6, 'ISTJ': 2, 'ISFJ': 6,
+        'ESTJ': 6, 'ISTP': 2, 'ISFP': 6, 'ESTP': 6
+    },
+    'စိတ်ကောက်လွယ်သူ': {
+        'INFP': 10, 'ISFP': 9, 'INFJ': 8, 'ISFJ': 8,
+        'INTJ': 6, 'INTP': 6, 'ENTJ': 2, 'ENTP': 2,
+        'ENFJ': 6, 'ENFP': 6, 'ISTJ': 6, 'ESTJ': 2,
+        'ESFJ': 6, 'ISTP': 6, 'ESTP': 2, 'ESFP': 2
+    },
     'ဆော့လေ့ရှိသူ (heart player)': {
         'ESTP': 10, 'ESFP': 9, 'ENTP': 8, 'ENFP': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'INFJ': 2,
         'INFP': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 2,
         'ESTJ': 6, 'ESFJ': 6, 'ISTP': 6, 'ISFP': 6
+    },
+    'ဉာဏ်ကောင်းသူ': {
+        'INTJ': 10, 'INTP': 9, 'ENTJ': 8, 'ENTP': 8,
+        'INFJ': 6, 'INFP': 2, 'ENFJ': 6, 'ENFP': 6,
+        'ISTJ': 6, 'ISFJ': 2, 'ESTJ': 10, 'ESFJ': 2,
+        'ISTP': 6, 'ISFP': 2, 'ESTP': 2, 'ESFP': 2
+    },
+    'ဉာဏ်နည်းသူ': {
+        'ISFP': 10, 'ESFP': 9, 'ISFJ': 8, 'ESFJ': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 2,
+        'INFJ': 6, 'INFP': 6, 'ENFJ': 6, 'ENFP': 6,
+        'ISTJ': 6, 'ESTJ': 2, 'ISTP': 6, 'ESTP': 6
     },
     'ညာဏ်ကောင်းသူ': {
         'INTJ': 10, 'INTP': 9, 'ENTJ': 8, 'ENTP': 8,
@@ -443,11 +521,23 @@ MBTI_SCORES = {
         'INFP': 6, 'ENFP': 6, 'ISTJ': 2, 'ESTJ': 6,
         'ISTP': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
     },
+    'တကိုယ်ကောင်းဆန်သူ': {
+        'ENTJ': 10, 'ESTJ': 9, 'INTJ': 8, 'ISTJ': 8,
+        'INTP': 2, 'ENTP': 2, 'INFJ': 6, 'INFP': 2,
+        'ENFJ': 6, 'ENFP': 2, 'ISFJ': 6, 'ESFJ': 6,
+        'ISTP': 6, 'ISFP': 2, 'ESTP': 2, 'ESFP': 2
+    },
     'တက်ကြွသူ': {
         'ESTP': 10, 'ESFP': 9, 'ENTP': 8, 'ENFP': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'INFJ': 2,
         'INFP': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 2,
         'ESTJ': 6, 'ESFJ': 6, 'ISTP': 6, 'ISFP': 6
+    },
+    'တစ္ဆေ': {
+        'ESTP': 10, 'ENTP': 9, 'ESTJ': 8, 'ENTJ': 8,
+        'INTJ': 2, 'INTP': 2, 'INFJ': 2, 'INFP': 2,
+        'ENFJ': 6, 'ENFP': 6, 'ISTJ': 2, 'ISFJ': 2,
+        'ESFJ': 6, 'ISTP': 6, 'ISFP': 2, 'ESFP': 6
     },
     'တည်ကြည်သူ': {
         'ISFJ': 10, 'ISTJ': 9, 'INFJ': 8, 'INTJ': 8,
@@ -455,17 +545,41 @@ MBTI_SCORES = {
         'ENFJ': 6, 'ENFP': 2, 'ESTJ': 6, 'ESFJ': 6,
         'ISTP': 6, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
     },
+    'တပ်မတော်သားကြီး': {
+        'ESTJ': 10, 'ENTJ': 9, 'ISTJ': 8, 'INTJ': 8,
+        'INTP': 2, 'ENTP': 2, 'INFJ': 6, 'INFP': 2,
+        'ENFJ': 6, 'ENFP': 2, 'ISFJ': 6, 'ESFJ': 6,
+        'ISTP': 6, 'ISFP': 2, 'ESTP': 2, 'ESFP': 2
+    },
     'ဒုတိယလူ': {
         'ESTP': 10, 'ENTP': 9, 'ESFP': 8, 'ENFP': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'INFJ': 2,
         'INFP': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 2,
         'ESTJ': 6, 'ESFJ': 6, 'ISTP': 6, 'ISFP': 6
     },
+    'နတ်ဆိုး': {
+        'ENTJ': 10, 'ESTJ': 9, 'ENTP': 8, 'INTJ': 8,
+        'INTP': 2, 'INFJ': 6, 'INFP': 2, 'ENFJ': 6,
+        'ENFP': 6, 'ISTJ': 2, 'ISFJ': 2, 'ESFJ': 6,
+        'ISTP': 6, 'ISFP': 2, 'ESTP': 2, 'ESFP': 2
+    },
     'နတ်သမီး': {
         'ENFJ': 10, 'ESFJ': 9, 'INFJ': 8, 'ISFJ': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 2,
         'INFP': 6, 'ENFP': 6, 'ISTJ': 2, 'ESTJ': 6,
         'ISTP': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
+    },
+    'နွားကျောင်းသား': {
+        'ISFJ': 10, 'ISTJ': 9, 'ESFJ': 8, 'ESTJ': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 2,
+        'INFJ': 6, 'INFP': 2, 'ENFJ': 6, 'ENFP': 2,
+        'ISTP': 6, 'ISFP': 6, 'ESTP': 6, 'ESFP': 6
+    },
+    'နွားဆန်သူ': {
+        'ISTJ': 10, 'ESTJ': 9, 'INTJ': 8, 'ISTP': 8,
+        'INTP': 2, 'ENTJ': 6, 'ENTP': 2, 'INFJ': 6,
+        'INFP': 2, 'ENFJ': 2, 'ENFP': 2, 'ISFJ': 6,
+        'ESFJ': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
     },
     'နှာဘူး': {
         'ENTJ': 10, 'ESTJ': 9, 'INTJ': 8, 'ISTJ': 8,
@@ -485,6 +599,18 @@ MBTI_SCORES = {
         'ENFJ': 6, 'ENFP': 6, 'ISTJ': 6, 'ESTJ': 2,
         'ESFJ': 6, 'ISTP': 6, 'ESTP': 2, 'ESFP': 2
     },
+    'ပလုံကောက်သမား': {
+        'ISFJ': 10, 'ISTJ': 9, 'ESFJ': 8, 'ESTJ': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 2,
+        'INFJ': 6, 'INFP': 2, 'ENFJ': 6, 'ENFP': 2,
+        'ISTP': 6, 'ISFP': 6, 'ESTP': 6, 'ESFP': 6
+    },
+    'ပိုက်ဆံချေးသူ': {
+        'ENTJ': 10, 'ESTJ': 9, 'INTJ': 8, 'ISTJ': 8,
+        'INTP': 2, 'ENTP': 2, 'INFJ': 6, 'INFP': 2,
+        'ENFJ': 6, 'ENFP': 2, 'ISFJ': 6, 'ESFJ': 6,
+        'ISTP': 6, 'ISFP': 2, 'ESTP': 2, 'ESFP': 2
+    },
     'ပျော်ပျော်နေသူ': {
         'ENFP': 10, 'ESFP': 9, 'ENTP': 8, 'ESTP': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'INFJ': 2,
@@ -502,6 +628,24 @@ MBTI_SCORES = {
         'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 2,
         'INFP': 6, 'ENFP': 6, 'ISTJ': 2, 'ESTJ': 6,
         'ISTP': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
+    },
+    'ပြိတ္တာ': {
+        'ISFP': 10, 'INFP': 9, 'ISTP': 8, 'INTP': 8,
+        'INTJ': 6, 'ENTJ': 2, 'ENTP': 6, 'INFJ': 6,
+        'ENFJ': 2, 'ENFP': 6, 'ISTJ': 6, 'ISFJ': 6,
+        'ESTJ': 2, 'ESFJ': 2, 'ESTP': 6, 'ESFP': 6
+    },
+    'ဖက်တီး': {
+        'ESFJ': 10, 'ISFJ': 9, 'ESFP': 8, 'ISFP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 2,
+        'INFJ': 6, 'INFP': 6, 'ENFJ': 6, 'ENFP': 6,
+        'ISTJ': 6, 'ESTJ': 2, 'ISTP': 6, 'ESTP': 6
+    },
+    'ဖင်ကြီးသူ': {
+        'ESFP': 10, 'ESTP': 9, 'ENFP': 8, 'ENTP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'INFJ': 2,
+        'INFP': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 2,
+        'ESTJ': 6, 'ESFJ': 6, 'ISTP': 6, 'ISFP': 6
     },
     'ဖာခေါင်း': {
         'ENTP': 10, 'ENFP': 9, 'ESTP': 8, 'ESFP': 8,
@@ -563,6 +707,12 @@ MBTI_SCORES = {
         'ENFJ': 2, 'ENFP': 6, 'ISTJ': 6, 'ISFJ': 6,
         'ESTJ': 2, 'ESFJ': 2, 'ESTP': 6, 'ESFP': 6
     },
+    'မာနကြီးသူ': {
+        'ENTJ': 10, 'ESTJ': 9, 'ENTP': 8, 'ESTP': 8,
+        'INTJ': 2, 'INTP': 2, 'INFJ': 2, 'INFP': 2,
+        'ENFJ': 6, 'ENFP': 6, 'ISTJ': 2, 'ISFJ': 2,
+        'ESFJ': 6, 'ISTP': 6, 'ISFP': 2, 'ESFP': 6
+    },
     'မိထွေး': {
         'ESTJ': 10, 'ENTJ': 9, 'ESFJ': 8, 'ENFJ': 8,
         'INTJ': 2, 'INTP': 2, 'ENTP': 6, 'INFJ': 6,
@@ -574,6 +724,12 @@ MBTI_SCORES = {
         'INTJ': 2, 'INTP': 2, 'ENTP': 6, 'INFJ': 6,
         'INFP': 2, 'ENFP': 6, 'ISTJ': 2, 'ISFJ': 6,
         'ISTP': 2, 'ISFP': 2, 'ESTP': 6, 'ESFP': 6
+    },
+    'မျက်ပြူး': {
+        'INFP': 10, 'ISFP': 9, 'INTP': 8, 'ISTP': 8,
+        'INTJ': 6, 'ENTJ': 2, 'ENTP': 6, 'INFJ': 6,
+        'ENFJ': 2, 'ENFP': 6, 'ISTJ': 6, 'ISFJ': 6,
+        'ESTJ': 2, 'ESFJ': 2, 'ESTP': 6, 'ESFP': 6
     },
     'မြင်းထိန်း': {
         'ISTP': 10, 'ISTJ': 9, 'ESTP': 8, 'ESTJ': 8,
@@ -611,6 +767,12 @@ MBTI_SCORES = {
         'INFP': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 2,
         'ESTJ': 6, 'ESFJ': 6, 'ISTP': 6, 'ISFP': 6
     },
+    'ရုပ်က္ခစိုး': {
+        'ENTJ': 10, 'ESTJ': 9, 'INTJ': 8, 'ISTJ': 8,
+        'INTP': 2, 'ENTP': 2, 'INFJ': 6, 'INFP': 2,
+        'ENFJ': 6, 'ENFP': 2, 'ISFJ': 6, 'ESFJ': 6,
+        'ISTP': 6, 'ISFP': 2, 'ESTP': 2, 'ESFP': 2
+    },
     'လယ်သမား': {
         'ISTJ': 10, 'ISFJ': 9, 'ESTJ': 8, 'ESFJ': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 2,
@@ -629,11 +791,29 @@ MBTI_SCORES = {
         'INFP': 6, 'ENFP': 6, 'ISTJ': 2, 'ESTJ': 6,
         'ISTP': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
     },
+    'လူလိမ်': {
+        'ENTP': 10, 'ESTP': 9, 'ENTJ': 8, 'ESTJ': 8,
+        'INTJ': 2, 'INTP': 2, 'INFJ': 2, 'INFP': 2,
+        'ENFJ': 6, 'ENFP': 6, 'ISTJ': 2, 'ISFJ': 2,
+        'ESFJ': 6, 'ISTP': 6, 'ISFP': 2, 'ESFP': 6
+    },
     'လွှမ်းပိုင်': {
         'ENFP': 10, 'ENTP': 9, 'ESFP': 8, 'ESTP': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'INFJ': 2,
         'INFP': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 2,
         'ESTJ': 6, 'ESFJ': 6, 'ISTP': 6, 'ISFP': 6
+    },
+    'ဝါးခြမ်းပြား': {
+        'INFP': 10, 'ISFP': 9, 'INTP': 8, 'ISTP': 8,
+        'INTJ': 6, 'ENTJ': 2, 'ENTP': 6, 'INFJ': 6,
+        'ENFJ': 2, 'ENFP': 6, 'ISTJ': 6, 'ISFJ': 6,
+        'ESTJ': 2, 'ESFJ': 2, 'ESTP': 6, 'ESFP': 6
+    },
+    'ဝိညာဥ်': {
+        'INFJ': 10, 'INTJ': 9, 'ENFJ': 8, 'ENTJ': 8,
+        'INTP': 6, 'ENTP': 6, 'INFP': 2, 'ENFP': 6,
+        'ISTJ': 2, 'ISFJ': 6, 'ESTJ': 6, 'ESFJ': 6,
+        'ISTP': 2, 'ISFP': 2, 'ESTP': 2, 'ESFP': 2
     },
     'သချိုင်းစောင့်': {
         'ISTJ': 10, 'ISFJ': 9, 'INTJ': 8, 'INFJ': 8,
@@ -659,11 +839,29 @@ MBTI_SCORES = {
         'ISTJ': 2, 'ISFJ': 2, 'ESTJ': 2, 'ESFJ': 2,
         'ISTP': 6, 'ISFP': 6, 'ESTP': 6, 'ESFP': 6
     },
+    'သဘက်': {
+        'INFP': 10, 'ISFP': 9, 'ENFP': 8, 'ESFP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 6,
+        'INFJ': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 6,
+        'ESTJ': 2, 'ESFJ': 6, 'ISTP': 6, 'ESTP': 6
+    },
+    'သဘောထားကြီးသူ': {
+        'ENFJ': 10, 'INFJ': 9, 'ENTJ': 8, 'INTJ': 8,
+        'INTP': 6, 'ENTP': 6, 'INFP': 2, 'ENFP': 6,
+        'ISTJ': 2, 'ISFJ': 6, 'ESTJ': 6, 'ESFJ': 6,
+        'ISTP': 2, 'ISFP': 2, 'ESTP': 2, 'ESFP': 2
+    },
     'သမီး': {
         'INFJ': 10, 'ENFJ': 9, 'ISFJ': 8, 'ESFJ': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 2,
         'INFP': 6, 'ENFP': 6, 'ISTJ': 2, 'ESTJ': 6,
         'ISTP': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
+    },
+    'သရဲ': {
+        'INFP': 10, 'INFJ': 9, 'INTP': 8, 'INTJ': 8,
+        'ENTJ': 2, 'ENTP': 6, 'ENFJ': 6, 'ENFP': 6,
+        'ISTJ': 6, 'ISFJ': 6, 'ESTJ': 2, 'ESFJ': 2,
+        'ISTP': 6, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
     },
     'သဝန်တိုတက်သူ': {
         'ESFJ': 10, 'ENFJ': 9, 'ISFJ': 8, 'INFJ': 8,
@@ -701,6 +899,18 @@ MBTI_SCORES = {
         'ENFJ': 2, 'ENFP': 2, 'ISFJ': 6, 'ESTJ': 2,
         'ESFJ': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
     },
+    'သွားခေါ': {
+        'ENFP': 10, 'ESFP': 9, 'INFP': 8, 'ISFP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 6,
+        'INFJ': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 6,
+        'ESTJ': 2, 'ESFJ': 6, 'ISTP': 6, 'ESTP': 6
+    },
+    'ဟက်ကာ': {
+        'INTP': 10, 'INTJ': 9, 'ISTP': 8, 'ENTP': 8,
+        'ENTJ': 6, 'INFJ': 6, 'INFP': 6, 'ENFJ': 2,
+        'ENFP': 6, 'ISTJ': 2, 'ISFJ': 2, 'ESTJ': 2,
+        'ESFJ': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
+    },
     'အကုသိုလ်': {
         'ESTP': 10, 'ENTP': 9, 'ISTP': 8, 'INTP': 8,
         'INTJ': 2, 'ENTJ': 6, 'INFJ': 2, 'INFP': 6,
@@ -709,9 +919,15 @@ MBTI_SCORES = {
     },
     'အကြံပေး': {
         'INTJ': 10, 'INTP': 9, 'INFJ': 8, 'ENTP': 8,
-        'ENTJ': 6, 'INFP': 6, 'ENFJ': 6, 'ENFP': 6,
-        'ISTJ': 6, 'ISFJ': 2, 'ESTJ': 10, 'ESFJ': 2,
+        'ENTJ': 6, 'INFP': 2, 'ENFJ': 6, 'ENFP': 6,
+        'ISTJ': 2, 'ISFJ': 2, 'ESTJ': 2, 'ESFJ': 2,
         'ISTP': 6, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
+    },
+    'အချိန်မတိကျသူ': {
+        'ENFP': 10, 'INFP': 9, 'ENTP': 8, 'INTP': 8,
+        'INTJ': 2, 'ENTJ': 2, 'INFJ': 6, 'ENFJ': 6,
+        'ISTJ': 2, 'ISFJ': 2, 'ESTJ': 2, 'ESFJ': 2,
+        'ISTP': 6, 'ISFP': 6, 'ESTP': 6, 'ESFP': 6
     },
     'အခွန်ကောက်အမတ်': {
         'ESTJ': 10, 'ISTJ': 9, 'ENTJ': 8, 'INTJ': 8,
@@ -725,8 +941,20 @@ MBTI_SCORES = {
         'INFJ': 6, 'INFP': 6, 'ISTJ': 2, 'ISFJ': 6,
         'ESTJ': 6, 'ISTP': 2, 'ISFP': 6, 'ESTP': 6
     },
+    'အပျော်မက်သူ': {
+        'ESFP': 10, 'ENFP': 9, 'ESTP': 8, 'ENTP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'INFJ': 2,
+        'INFP': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 2,
+        'ESTJ': 6, 'ESFJ': 6, 'ISTP': 6, 'ISFP': 6
+    },
     'အပြင်သွားလေ့ရှိသူ': {
         'ESTP': 10, 'ESFP': 9, 'ENTP': 8, 'ENFP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'INFJ': 2,
+        'INFP': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 2,
+        'ESTJ': 6, 'ESFJ': 6, 'ISTP': 6, 'ISFP': 6
+    },
+    'အပြာသရုပ်ဆောင်': {
+        'ESFP': 10, 'ESTP': 9, 'ENFP': 8, 'ENTP': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 6, 'INFJ': 2,
         'INFP': 6, 'ENFJ': 6, 'ISTJ': 2, 'ISFJ': 2,
         'ESTJ': 6, 'ESFJ': 6, 'ISTP': 6, 'ISFP': 6
@@ -773,6 +1001,18 @@ MBTI_SCORES = {
         'ISTJ': 2, 'ISFJ': 6, 'ESTJ': 2, 'ESFJ': 6,
         'ISTP': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
     },
+    'အသားမဲသူ': {
+        'ISFP': 10, 'ISTP': 9, 'ESFP': 8, 'ESTP': 8,
+        'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 6,
+        'INFJ': 2, 'INFP': 6, 'ENFJ': 2, 'ENFP': 6,
+        'ISTJ': 6, 'ISFJ': 6, 'ESTJ': 2, 'ESFJ': 2
+    },
+    'အသူရကယ်': {
+        'ENTJ': 10, 'ESTJ': 9, 'ENTP': 8, 'ESTP': 8,
+        'INTJ': 2, 'INTP': 2, 'INFJ': 2, 'INFP': 2,
+        'ENFJ': 6, 'ENFP': 6, 'ISTJ': 2, 'ISFJ': 2,
+        'ESFJ': 6, 'ISTP': 6, 'ISFP': 2, 'ESFP': 6
+    },
     'အားပေးလေ့ရှိသူ': {
         'ENFJ': 10, 'ESFJ': 9, 'INFJ': 8, 'ISFJ': 8,
         'INTJ': 2, 'INTP': 2, 'ENTJ': 2, 'ENTP': 2,
@@ -785,6 +1025,12 @@ MBTI_SCORES = {
         'ENFJ': 6, 'ENFP': 2, 'ISFJ': 6, 'ESFJ': 6,
         'ISTP': 6, 'ISFP': 2, 'ESTP': 2, 'ESFP': 2
     },
+    'အိမ်သာသန့်ရှင်းရေး': {
+        'ISFJ': 10, 'ISTJ': 9, 'ISFP': 8, 'ISTP': 8,
+        'INTJ': 6, 'INTP': 6, 'ENTJ': 2, 'ENTP': 2,
+        'INFJ': 6, 'INFP': 6, 'ENFJ': 2, 'ENFP': 2,
+        'ESTJ': 2, 'ESFJ': 2, 'ESTP': 6, 'ESFP': 6
+    },
     'အေးဆေးနေတက်သူ': {
         'ISTP': 10, 'ISFP': 9, 'INTP': 8, 'INFP': 8,
         'INTJ': 6, 'ENTJ': 2, 'ENTP': 6, 'INFJ': 6,
@@ -796,6 +1042,12 @@ MBTI_SCORES = {
         'ENTJ': 6, 'ENTP': 2, 'INFJ': 6, 'INFP': 6,
         'ENFJ': 2, 'ENFP': 2, 'ISFJ': 6, 'ESTJ': 2,
         'ESFJ': 2, 'ISFP': 6, 'ESTP': 2, 'ESFP': 2
+    },
+    'ဥစ္စာစောင့်': {
+        'ISTJ': 10, 'ESTJ': 9, 'INTJ': 8, 'ENTJ': 8,
+        'INTP': 2, 'ENTP': 2, 'INFJ': 6, 'INFP': 2,
+        'ENFJ': 6, 'ENFP': 2, 'ISFJ': 6, 'ESFJ': 6,
+        'ISTP': 6, 'ISFP': 2, 'ESTP': 2, 'ESFP': 2
     },
     'ဥပဒေအရာရှိ': {
         'INTJ': 10, 'ISTJ': 9, 'ENTJ': 8, 'ESTJ': 8,
@@ -1104,6 +1356,16 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
+    'ကတိဖျက်သူ': {
+        'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
+        'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
+        'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
+    'ကတုံး': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
     'ကလေး': {
         'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
@@ -1113,6 +1375,11 @@ ZODIAC_SCORES = {
         'Capricorn': 10, 'Taurus': 9, 'Virgo': 8, 'Scorpio': 7,
         'Aries': 5, 'Gemini': 5, 'Cancer': 5, 'Leo': 5,
         'Libra': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'ကျပ်မပြည့်': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
     'ကျားဖြန့် (လူလိမ်)': {
         'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
@@ -1129,15 +1396,45 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
+    'ခပ်ချောချော': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'ချီးစားစုန်း': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'ချဲဒိုင်': {
+        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
+        'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
+        'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
+    },
     'ချွေးမ': {
         'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
+    'ခြံစောင့်': {
+        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
+        'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
+        'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
+    },
     'ခွေးဝဲစား': {
         'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
         'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
         'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
+    'ဂျပု': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'ငပျင်း': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
     'ငြင်းလေ့ရှိသူ': {
         'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
@@ -1169,10 +1466,30 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
+    'စားပွဲထိုး': {
+        'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
+        'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
+        'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
+    'စိတ်ကောက်လွယ်သူ': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
     'ဆော့လေ့ရှိသူ (heart player)': {
         'Aries': 10, 'Leo': 9, 'Sagittarius': 8, 'Scorpio': 7,
         'Taurus': 5, 'Gemini': 5, 'Cancer': 5, 'Virgo': 5,
         'Libra': 4, 'Capricorn': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'ဉာဏ်ကောင်းသူ': {
+        'Virgo': 10, 'Aquarius': 10, 'Capricorn': 8, 'Scorpio': 7,
+        'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
+        'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
+    },
+    'ဉာဏ်နည်းသူ': {
+        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
+        'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
+        'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
     },
     'ညာဏ်ကောင်းသူ': {
         'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
@@ -1184,7 +1501,17 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
+    'တကိုယ်ကောင်းဆန်သူ': {
+        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
+        'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
+        'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
+    },
     'တက်ကြွသူ': {
+        'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
+        'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
+        'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
+    'တစ္ဆေ': {
         'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
         'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
         'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
@@ -1194,7 +1521,17 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
+    'တပ်မတော်သားကြီး': {
+        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
+        'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
+        'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
+    },
     'ဒုတိယလူ': {
+        'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
+        'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
+        'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
+    'နတ်ဆိုး': {
         'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
         'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
         'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
@@ -1203,6 +1540,16 @@ ZODIAC_SCORES = {
         'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'နွားကျောင်းသား': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'နွားဆန်သူ': {
+        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
+        'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
+        'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
     },
     'နှာဘူး': {
         'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
@@ -1219,6 +1566,16 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
+    'ပလုံကောက်သမား': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'ပိုက်ဆံချေးသူ': {
+        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
+        'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
+        'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
+    },
     'ပျော်ပျော်နေသူ': {
         'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
         'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
@@ -1233,6 +1590,21 @@ ZODIAC_SCORES = {
         'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'ပြိတ္တာ': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'ဖက်တီး': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'ဖင်ကြီးသူ': {
+        'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
+        'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
+        'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
     },
     'ဖာခေါင်း': {
         'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
@@ -1284,6 +1656,11 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
+    'မာနကြီးသူ': {
+        'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
+        'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
+        'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
     'မိထွေး': {
         'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
         'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
@@ -1293,6 +1670,11 @@ ZODIAC_SCORES = {
         'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
         'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
         'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
+    'မျက်ပြူး': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
     'မြင်းထိန်း': {
         'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
@@ -1324,6 +1706,11 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
         'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
     },
+    'ရုပ်က္ခစိုး': {
+        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
+        'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
+        'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
+    },
     'လယ်သမား': {
         'Capricorn': 10, 'Taurus': 9, 'Virgo': 8, 'Scorpio': 7,
         'Aries': 5, 'Gemini': 5, 'Cancer': 5, 'Leo': 5,
@@ -1339,10 +1726,25 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
+    'လူလိမ်': {
+        'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
+        'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
+        'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
     'လွှမ်းပိုင်': {
         'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
         'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
         'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
+    'ဝါးခြမ်းပြား': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'ဝိညာဥ်': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
     'သချိုင်းစောင့်': {
         'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
@@ -1364,7 +1766,22 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
+    'သဘက်': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'သဘောထားကြီးသူ': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
     'သမီး': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'သရဲ': {
         'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
@@ -1399,15 +1816,30 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
         'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
     },
+    'သွားခေါ': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'ဟက်ကာ': {
+        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
+        'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
+        'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
+    },
     'အကုသိုလ်': {
         'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
         'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
         'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
     },
     'အကြံပေး': {
-        'Virgo': 10, 'Aquarius': 10, 'Capricorn': 8, 'Scorpio': 7,
+        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
         'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
         'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
+    },
+    'အချိန်မတိကျသူ': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
     'အခွန်ကောက်အမတ်': {
         'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
@@ -1419,7 +1851,17 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
         'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
     },
+    'အပျော်မက်သူ': {
+        'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
+        'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
+        'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
     'အပြင်သွားလေ့ရှိသူ': {
+        'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
+        'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
+        'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
+    'အပြာသရုပ်ဆောင်': {
         'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
         'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
         'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
@@ -1459,6 +1901,16 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
+    'အသားမဲသူ': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
+    'အသူရကယ်': {
+        'Gemini': 10, 'Libra': 9, 'Aquarius': 8, 'Sagittarius': 7,
+        'Aries': 5, 'Taurus': 5, 'Cancer': 5, 'Leo': 5,
+        'Virgo': 4, 'Scorpio': 4, 'Capricorn': 2, 'Pisces': 2
+    },
     'အားပေးလေ့ရှိသူ': {
         'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
@@ -1469,12 +1921,22 @@ ZODIAC_SCORES = {
         'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
         'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
     },
+    'အိမ်သာသန့်ရှင်းရေး': {
+        'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
+        'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
+        'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
+    },
     'အေးဆေးနေတက်သူ': {
         'Cancer': 10, 'Taurus': 9, 'Virgo': 8, 'Capricorn': 7,
         'Aries': 5, 'Gemini': 5, 'Leo': 5, 'Libra': 5,
         'Scorpio': 4, 'Sagittarius': 4, 'Aquarius': 2, 'Pisces': 2
     },
     'အေးတိအေးစက် (Cold Heart)': {
+        'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
+        'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
+        'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
+    },
+    'ဥစ္စာစောင့်': {
         'Virgo': 10, 'Aquarius': 9, 'Capricorn': 8, 'Scorpio': 7,
         'Aries': 5, 'Taurus': 5, 'Gemini': 5, 'Cancer': 5,
         'Leo': 4, 'Libra': 4, 'Sagittarius': 2, 'Pisces': 2
@@ -1496,7 +1958,7 @@ ZODIAC_SCORES = {
     },
 }
 
-# Total roles: 135
-# MBTI entries: 2160
-# Zodiac entries: 1620
-# Total score entries: 3780
+# Total roles: 177
+# MBTI entries: 2832
+# Zodiac entries: 2124
+# Total score entries: 4956
